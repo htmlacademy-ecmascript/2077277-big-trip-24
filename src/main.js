@@ -11,7 +11,7 @@ const header = document.querySelector('.page-header');
 const filtersContainer = header.querySelector('.trip-controls__filters');
 const routeContainer = header.querySelector('.trip-main');
 const pointsModel = new PointsModel;
-const mainPresenter = new MainPresenter(mainSection, pointsModel);
+const mainPresenter = new MainPresenter({ container: mainSection, pointsModel });
 const headerPresenter = new HeaderPresenter(routeContainer);
 
 render(new SortingView, mainSection);
@@ -19,6 +19,3 @@ render(new FiltersView, filtersContainer);
 
 headerPresenter.init();
 mainPresenter.init();
-
-// console.log(createPoints(3));
-

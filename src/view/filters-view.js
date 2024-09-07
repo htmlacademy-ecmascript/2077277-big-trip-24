@@ -1,6 +1,5 @@
 import { createElement } from '../render';
-
-const FILTERS_TYPES = ['everything', 'future', 'present', 'past'];
+import { FILTERS_TYPES } from '../const';
 
 function createFiltersItemTemplate(type) {
   return `<div class="trip-filters__filter">
