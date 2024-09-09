@@ -1,6 +1,5 @@
 import { createElement } from '../render';
-
-const SORTING_TYPES = ['day', 'event', 'time', 'price', 'offer'];
+import { SORTING_TYPES } from '../const';
 
 function createSortingItemTemplate(type) {
   return `<div class="trip-sort__item  trip-sort__item--${type}">
