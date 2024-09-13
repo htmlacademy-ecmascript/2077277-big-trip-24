@@ -2,7 +2,7 @@ import SortingView from './view/sorting-view';
 import FiltersView from './view/filters-view';
 import MainPresenter from './presenter/main-presenter';
 import HeaderPresenter from './presenter/header-presenter';
-import { render } from './render';
+import { render } from './framework/render';
 import PointsModel from './model/points-model';
 
 const main = document.querySelector('.page-body__page-main');
