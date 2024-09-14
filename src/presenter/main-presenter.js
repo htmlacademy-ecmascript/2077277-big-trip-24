@@ -18,7 +18,10 @@ export default class MainPresenter {
 
   init() {
     this.#pointsList = [...this.#model.points];
+    this.#renderPointsList();
+  }
 
+  #renderPointsList() {
     render(this.#pointsListView, this.#container);
     //форму добавления точки пока скрыла, так как в задании пока указано только про форму
     // render(new AddFormView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
