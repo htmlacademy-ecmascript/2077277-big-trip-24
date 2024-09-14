@@ -2,7 +2,7 @@ import { createPoints } from '../mock/points';
 import { destinations } from '../mock/destinations';
 import { offers } from '../mock/offers';
 
-const POINTS_NUMBER = 4;
+const POINTS_NUMBER = 6;
 
 export default class PointsModel {
   #points = createPoints(POINTS_NUMBER);
