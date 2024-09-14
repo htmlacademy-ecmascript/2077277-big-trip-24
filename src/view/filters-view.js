@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { FILTERS_TYPES } from '../const';
 
 function createFiltersItemTemplate(type) {
@@ -15,19 +15,8 @@ function createFiltersTemplate() {
           </form>`;
 }
 
-export default class FiltersView {
-  getTemplate() {
+export default class FiltersView extends AbstractView {
+  get template() {
     return createFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

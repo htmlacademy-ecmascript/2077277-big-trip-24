@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { POINTS_TYPES } from '../const';
 
 function createEventItemTemplate(eventType) {
@@ -130,19 +130,8 @@ function createAddFormTemplate() {
             </li>`;
 }
 
-export default class AddFormView {
-  getTemplate() {
+export default class AddFormView extends AbstractView {
+  get template() {
     return createAddFormTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

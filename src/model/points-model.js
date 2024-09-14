@@ -2,32 +2,32 @@ import { createPoints } from '../mock/points';
 import { destinations } from '../mock/destinations';
 import { offers } from '../mock/offers';
 
-const POINTS_NUMBER = 4;
+const POINTS_NUMBER = 6;
 
 export default class PointsModel {
-  points = createPoints(POINTS_NUMBER);
-  destinations = destinations;
-  offers = offers;
+  #points = createPoints(POINTS_NUMBER);
+  #destinations = destinations;
+  #offers = offers;
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
   getDestinationsById(id) {
-    const allDestinations = this.getDestinations();
+    const allDestinations = this.destinations;
     return allDestinations.find((item) => item.id === id);
   }
 
   getOffersByType(type) {
-    const allOffers = this.getOffers();
+    const allOffers = this.offers;
     return allOffers.find((item) => item.type === type);
   }
 

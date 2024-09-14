@@ -1,5 +1,5 @@
 import RouteView from '../view/route-view';
-import { render, RenderPosition } from '../render';
+import { render, RenderPosition } from '../framework/render';
 
 export default class HeaderPresenter {
   constructor(container) {

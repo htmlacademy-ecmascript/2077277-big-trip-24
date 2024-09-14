@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { SORTING_TYPES } from '../const';
 
 function createSortingItemTemplate(type) {
@@ -14,19 +14,8 @@ function createSortingTemplate() {
           </form>`;
 }
 
-export default class SortingView {
-  getTemplate() {
+export default class SortingView extends AbstractView {
+  get template() {
     return createSortingTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

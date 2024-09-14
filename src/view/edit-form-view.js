@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { POINTS_TYPES } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils';
 
@@ -102,26 +102,45 @@ function createEditFormTemplate(point, destination, allDestinations, allOffers) 
               </form>
             </li>`;
 }
-export default class EditFormView {
-  constructor({ point, destination, allDestinations, allOffers }) {
-    this.point = point;
-    this.destination = destination;
-    this.allDestinations = allDestinations;
-    this.allOffers = allOffers;
+export default class EditFormView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #allDestinations = null;
+  #allOffers = null;
+  #onCloseEditButtonClick = null;
+  #onSubmitButtonClick = null;
+
+  constructor({ point, destination, allDestinations, allOffers, onCloseEditButtonClick,
+    onSubmitButtonClick }) {
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#allDestinations = allDestinations;
+    this.#allOffers = allOffers;
+    this.#onCloseEditButtonClick = onCloseEditButtonClick;
+    this.#onSubmitButtonClick = onSubmitButtonClick;
+    this.#setEventListeners();
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this.point, this.destination, this.allDestinations, this.allOffers);
+  get template() {
+    return createEditFormTemplate(this.#point, this.#destination, this.#allDestinations, this.#allOffers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
+  #setEventListeners() {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeEditButtonClickHandler);
+
+    this.element.querySelector('.event__save-btn')
+      .addEventListener('submit', this.#submitButtonClickHandler);
   }
 
-  removeElement() {
-    this.element = null;
-  }
+  #closeEditButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onCloseEditButtonClick();
+  };
+
+  #submitButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSubmitButtonClick();
+  };
 }
