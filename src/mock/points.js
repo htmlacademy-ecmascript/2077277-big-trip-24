@@ -1,9 +1,9 @@
 import { destinations } from './destinations';
 import { offers } from './offers';
-import { getRandomInteger, getRandomArrayElement } from '../utils';
+import { getRandomInteger, getRandomArrayElement} from '../utils/common';
 import { POINTS_TYPES } from '../const';
 import { IS_FAVORITE_TYPES } from '../const';
-import { getRandomDate } from '../utils';
+import { getRandomDate } from '../utils/task';
 
 const MAX_RANDOM_INTEGER = 3000;
 const MIN_RANDOM_INTEGER = 500;

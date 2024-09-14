@@ -1,9 +1,11 @@
 import PointsListView from '../view/points-list-view';
 import PointsView from '../view/points-view';
 import EditFormView from '../view/edit-form-view';
+import noPointsView from '../view/no-points-view';
 // import AddFormView from '../view/add-form-view';
 import { render } from '../framework/render';
 import { replace } from '../framework/render';
+import { EmptyPhrase } from '../const';
 
 export default class MainPresenter {
   #container = null;
@@ -18,7 +20,11 @@ export default class MainPresenter {
 
   init() {
     this.#pointsList = [...this.#model.points];
-    this.#renderPointsList();
+    if (this.#pointsList.length === 0) {
+      render(new noPointsView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
+    } else {
+      this.#renderPointsList();
+    }
   }
 
   #renderPointsList() {
@@ -26,7 +32,7 @@ export default class MainPresenter {
     //форму добавления точки пока скрыла, так как в задании пока указано только про форму
     // render(new AddFormView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
 
-    for (let i = 1; i < this.#pointsList.length; i++) {
+    for (let i = 0; i < this.#pointsList.length; i++) {
       this.#renderPoints(this.#pointsList[i]);
     }
   }

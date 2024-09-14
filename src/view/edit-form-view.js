@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 import { POINTS_TYPES } from '../const';
-import { capitalize, humanizeTaskDueDate } from '../utils';
+import { capitalize, humanizeTaskDueDate } from '../utils/task';
 
 function createEventItemTemplate(eventType) {
   return `<div class="event__type-item">

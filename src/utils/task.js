@@ -2,14 +2,6 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
-function getRandomInteger(max, min = 0) {
-  return Math.floor(min + Math.random() * (max - min));
-}
-
 function getRandomDate(start, end) {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
@@ -32,4 +24,4 @@ function capitalize(word) {
   }
 }
 
-export { getRandomArrayElement, getRandomInteger, humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize };
+export { humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize };
