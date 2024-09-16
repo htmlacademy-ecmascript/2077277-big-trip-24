@@ -25,8 +25,8 @@ function createPoints(pointsNumber) {
   const points = [];
   for (let i = 0; i < pointsNumber; i++) {
     const pointType = getRandomArrayElement(POINTS_TYPES);
-    const startDate = getRandomDate(new Date(), new Date(2024, 8, 19));
-    const endDate = getRandomDate(startDate, new Date(2024, 8, 19));
+    const startDate = getRandomDate(new Date(2024, 8, 10), new Date(2024, 8, 25));
+    const endDate = getRandomDate(startDate, new Date(2024, 8, 25));
 
     points.push({
       type: pointType,
