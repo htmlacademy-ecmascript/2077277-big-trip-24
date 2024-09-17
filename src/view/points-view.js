@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { humanizeTaskDueDate, getDifferenceTime, capitalize } from '../utils';
+import { humanizeTaskDueDate, getDifferenceTime, capitalize } from '../utils/task';
 import { TIME_NULL } from '../const';
 
 function createPointsTemplate(point, destination, offers) {

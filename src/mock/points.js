@@ -1,9 +1,9 @@
 import { destinations } from './destinations';
 import { offers } from './offers';
-import { getRandomInteger, getRandomArrayElement } from '../utils';
+import { getRandomInteger, getRandomArrayElement} from '../utils/common';
 import { POINTS_TYPES } from '../const';
 import { IS_FAVORITE_TYPES } from '../const';
-import { getRandomDate } from '../utils';
+import { getRandomDate } from '../utils/task';
 
 const MAX_RANDOM_INTEGER = 3000;
 const MIN_RANDOM_INTEGER = 500;
@@ -25,8 +25,8 @@ function createPoints(pointsNumber) {
   const points = [];
   for (let i = 0; i < pointsNumber; i++) {
     const pointType = getRandomArrayElement(POINTS_TYPES);
-    const startDate = getRandomDate(new Date(), new Date(2024, 8, 19));
-    const endDate = getRandomDate(startDate, new Date(2024, 8, 19));
+    const startDate = getRandomDate(new Date(2024, 8, 10), new Date(2024, 8, 25));
+    const endDate = getRandomDate(startDate, new Date(2024, 8, 25));
 
     points.push({
       type: pointType,
