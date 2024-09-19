@@ -9,7 +9,7 @@ function createEventItemTemplate(eventType) {
           `;
 }
 
-function createAddFormTemplate() {
+function createFormAddTemplate() {
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -130,8 +130,8 @@ function createAddFormTemplate() {
             </li>`;
 }
 
-export default class AddFormView extends AbstractView {
+export default class FormAddView extends AbstractView {
   get template() {
-    return createAddFormTemplate();
+    return createFormAddTemplate();
   }
 }

@@ -1,36 +1,40 @@
 import PointsListView from '../view/points-list-view';
 import PointsView from '../view/points-view';
-import EditFormView from '../view/edit-form-view';
-import noPointsView from '../view/no-points-view';
-// import AddFormView from '../view/add-form-view';
+import FormEditView from '../view/form-edit-view';
+import PointsEmptyView from '../view/points-empty-view';
+// import FormAddView from '../view/form-add-view';
 import { render } from '../framework/render';
 import { replace } from '../framework/render';
 import { EmptyPhrase } from '../const';
 
 export default class MainPresenter {
   #container = null;
-  #model = null;
+  #pointsModel = null;
   #pointsListView = new PointsListView();
   #pointsList = [];
+  #offersModel = [];
+  #destinationsModel = [];
 
-  constructor({ container, pointsModel }) {
+  constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
-    this.#model = pointsModel;
+    this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
   }
 
   init() {
-    this.#pointsList = [...this.#model.points];
-    if (this.#pointsList.length === 0) {
-      render(new noPointsView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
-    } else {
+    this.#pointsList = [...this.#pointsModel.points];
+    if (this.#pointsList.length !== 0) {
       this.#renderPointsList();
+      return;
     }
+    render(new PointsEmptyView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
   }
 
   #renderPointsList() {
     render(this.#pointsListView, this.#container);
     //форму добавления точки пока скрыла, так как в задании пока указано только про форму
-    // render(new AddFormView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
+    // render(new FormAddView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
 
     for (let i = 0; i < this.#pointsList.length; i++) {
       this.#renderPoints(this.#pointsList[i]);
@@ -42,48 +46,48 @@ export default class MainPresenter {
     function escKeyDownHandler(evt) {
       if (evt.key === 'Escape') {
         evt.preventDefault();
-        replaceEditFormToPoint();
+        replaceFormEditToPoint();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     }
 
     function onOpenEditButtonClick() {
-      replacePointToEditForm();
+      replacePointToFormEdit();
       document.addEventListener('keydown', escKeyDownHandler);
     }
 
     function onCloseEditButtonClick() {
-      replaceEditFormToPoint();
+      replaceFormEditToPoint();
       document.removeEventListener('keydown', escKeyDownHandler);
     }
 
     function onSubmitButtonClick() {
-      replaceEditFormToPoint();
+      replaceFormEditToPoint();
       document.removeEventListener('keydown', escKeyDownHandler);
     }
 
-    const editFormComponent = new EditFormView({
+    const formEditComponent = new FormEditView({
       point: this.#pointsList[0],
-      destination: this.#model.getDestinationsById(this.#pointsList[0].destination),
-      allDestinations: this.#model.destinations,
-      allOffers: this.#model.getOffersByType(this.#pointsList[0].type),
+      destination: this.#destinationsModel.getDestinationsById(this.#pointsList[0].destination),
+      allDestinations: this.#destinationsModel.destinations,
+      allOffers: this.#offersModel.getOffersByType(this.#pointsList[0].type),
       onCloseEditButtonClick,
       onSubmitButtonClick
     });
 
     const pointComponent = new PointsView({
       point: pointsList,
-      destination: this.#model.getDestinationsById(pointsList.destination),
-      offers: this.#model.getOffersById(pointsList.type, pointsList.offers),
+      destination: this.#destinationsModel.getDestinationsById(pointsList.destination),
+      offers: this.#offersModel.getOffersById(pointsList.type, pointsList.offers),
       onOpenEditButtonClick
     });
 
-    function replacePointToEditForm() {
-      replace(editFormComponent, pointComponent);
+    function replacePointToFormEdit() {
+      replace(formEditComponent, pointComponent);
     }
 
-    function replaceEditFormToPoint() {
-      replace(pointComponent, editFormComponent);
+    function replaceFormEditToPoint() {
+      replace(pointComponent, formEditComponent);
     }
 
     render(pointComponent, this.#pointsListView.element);

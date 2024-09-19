@@ -1,12 +1,12 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createNoPointsTemplate(message) {
+function createPointsEmptyTemplate(message) {
   return `<p class="trip-events__msg">${message}</p>
 `;
 }
 
-export default class noPointsView extends AbstractView {
-  #message = null;
+export default class PointsEmptyView extends AbstractView {
+  #message = [];
 
   constructor({message}) {
     super();
@@ -14,6 +14,6 @@ export default class noPointsView extends AbstractView {
   }
 
   get template() {
-    return createNoPointsTemplate(this.#message);
+    return createPointsEmptyTemplate(this.#message);
   }
 }
