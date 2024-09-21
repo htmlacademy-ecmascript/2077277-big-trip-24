@@ -98,8 +98,6 @@ export default class PointsView extends AbstractView {
   #openEditButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onOpenEditButtonClick();
-
-    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#openEditButtonClickHandler);
   };
 
   #favoriteButtonClickHandler = (evt) => {
