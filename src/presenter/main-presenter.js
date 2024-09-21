@@ -35,9 +35,15 @@ export default class MainPresenter {
     render(new PointsEmptyView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
   }
 
-  #pointChangeHandler = (updatedPoint) => {
+  #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => {
+      presenter.resetView();
+    });
   };
 
   #renderPointsList() {
@@ -56,7 +62,8 @@ export default class MainPresenter {
       pointsListComponent: this.#pointsList,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#pointChangeHandler
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     });
 
     pointPresenter.init(point);

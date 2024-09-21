@@ -92,15 +92,17 @@ export default class PointsView extends AbstractView {
       .addEventListener('click', this.#openEditButtonClickHandler);
 
     this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#favoriteClickHandler);
+      .addEventListener('click', this.#favoriteButtonClickHandler);
   }
 
   #openEditButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onOpenEditButtonClick();
+
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#openEditButtonClickHandler);
   };
 
-  #favoriteClickHandler = (evt) => {
+  #favoriteButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onFavoriteClick();
   };
