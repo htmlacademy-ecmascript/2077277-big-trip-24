@@ -4,6 +4,7 @@ import { getRandomInteger, getRandomArrayElement} from '../utils/common';
 import { POINTS_TYPES } from '../const';
 import { IS_FAVORITE_TYPES } from '../const';
 import { getRandomDate } from '../utils/task';
+import { nanoid } from 'nanoid';
 
 const MAX_RANDOM_INTEGER = 3000;
 const MIN_RANDOM_INTEGER = 500;
@@ -32,6 +33,7 @@ function createPoints(pointsNumber) {
     const endDate = getRandomDate(startDate, DATE_TO);
 
     points.push({
+      id: nanoid(),
       type: pointType,
       offers: getOfferId(pointType),
       basePrice: getRandomInteger(MAX_RANDOM_INTEGER, MIN_RANDOM_INTEGER),

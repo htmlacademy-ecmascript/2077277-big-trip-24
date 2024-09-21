@@ -6,4 +6,8 @@ function getRandomInteger(max, min = 0) {
   return Math.floor(min + Math.random() * (max - min));
 }
 
-export { getRandomArrayElement, getRandomInteger };
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export { getRandomArrayElement, getRandomInteger, updateItem };

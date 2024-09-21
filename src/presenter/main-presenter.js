@@ -1,9 +1,9 @@
 import PointsListView from '../view/points-list-view';
 import PointsEmptyView from '../view/points-empty-view';
-// import FormAddView from '../view/form-add-view';
 import { render } from '../framework/render';
 import { EmptyPhrase } from '../const';
 import PointPresenter from './point-presenter';
+import { updateItem } from '../utils/common';
 
 export default class MainPresenter {
   #container = null;
@@ -12,6 +12,7 @@ export default class MainPresenter {
   #points = [];
   #offersModel = [];
   #destinationsModel = [];
+  #pointPresenters = new Map;
 
   constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
@@ -34,9 +35,12 @@ export default class MainPresenter {
     render(new PointsEmptyView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
   }
 
+  #pointChangeHandler = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
   #renderPointsList() {
-    //форму добавления точки пока скрыла, так как в задании пока указано только про форму
-    // render(new FormAddView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
     render(this.#pointsList, this.#container);
     this.#renderPoints(this.#points);
   }
@@ -49,63 +53,20 @@ export default class MainPresenter {
 
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
-      pointsListComponent: this.#pointsList.element,
+      pointsListComponent: this.#pointsList,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
+      onDataChange: this.#pointChangeHandler
     });
 
     pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  // #renderPoints(pointsList) {
-
-  //   function escKeyDownHandler(evt) {
-  //     if (evt.key === 'Escape') {
-  //       evt.preventDefault();
-  //       replaceFormEditToPoint();
-  //       document.removeEventListener('keydown', escKeyDownHandler);
-  //     }
-  //   }
-
-  //   function onOpenEditButtonClick() {
-  //     replacePointToFormEdit();
-  //     document.addEventListener('keydown', escKeyDownHandler);
-  //   }
-
-  //   function onCloseEditButtonClick() {
-  //     replaceFormEditToPoint();
-  //     document.removeEventListener('keydown', escKeyDownHandler);
-  //   }
-
-  //   function onSubmitButtonClick() {
-  //     replaceFormEditToPoint();
-  //     document.removeEventListener('keydown', escKeyDownHandler);
-  //   }
-
-  //   const formEditComponent = new FormEditView({
-  //     point: this.#pointsList[0],
-  //     destination: this.#destinationsModel.getDestinationsById(this.#pointsList[0].destination),
-  //     allDestinations: this.#destinationsModel.destinations,
-  //     allOffers: this.#offersModel.getOffersByType(this.#pointsList[0].type),
-  //     onCloseEditButtonClick,
-  //     onSubmitButtonClick
-  //   });
-
-  //   const pointComponent = new PointsView({
-  //     point: pointsList,
-  //     destination: this.#destinationsModel.getDestinationsById(pointsList.destination),
-  //     offers: this.#offersModel.getOffersById(pointsList.type, pointsList.offers),
-  //     onOpenEditButtonClick
-  //   });
-
-  //   function replacePointToFormEdit() {
-  //     replace(formEditComponent, pointComponent);
-  //   }
-
-  //   function replaceFormEditToPoint() {
-  //     replace(pointComponent, formEditComponent);
-  //   }
-
-  //   render(pointComponent, this.#pointsListView.element);
-  // }
+  #clearPointsList() {
+    this.#pointPresenters.forEach((presenter) => {
+      presenter.destroy();
+    });
+    this.#pointPresenters.clear();
+  }
 }
