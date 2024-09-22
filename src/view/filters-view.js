@@ -1,8 +1,9 @@
 import AbstractView from '../framework/view/abstract-view';
+import { FilterType } from '../const';
 
 function createFiltersItemTemplate(filter) {
 
-  const checkedAttribute = filter.type === 'everything' ? 'checked' : '';
+  const checkedAttribute = filter.type === FilterType.EVERYTHING ? 'checked' : '';
   const disabledAttribute = filter.count === 0 ? 'disabled' : '';
 
   return `<div class="trip-filters__filter">
@@ -20,7 +21,7 @@ function createFiltersTemplate(filters) {
 }
 
 export default class FiltersView extends AbstractView {
-  #filters = null;
+  #filters = [];
 
   constructor({ filters }) {
     super();

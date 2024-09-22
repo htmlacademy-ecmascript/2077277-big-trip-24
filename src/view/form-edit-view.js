@@ -9,7 +9,7 @@ function createEventItemTemplate(eventType) {
           </div>`;
 }
 
-function createEditFormTemplate(point, destination, allDestinations, allOffers) {
+function createFormEditTemplate(point, destination, allDestinations, allOffers) {
 
   const { type, basePrice, dateFrom, dateTo } = point;
 
@@ -102,11 +102,11 @@ function createEditFormTemplate(point, destination, allDestinations, allOffers) 
               </form>
             </li>`;
 }
-export default class EditFormView extends AbstractView {
-  #point = null;
-  #destination = null;
-  #allDestinations = null;
-  #allOffers = null;
+export default class FormEditView extends AbstractView {
+  #point = [];
+  #destination = [];
+  #allDestinations = [];
+  #allOffers = [];
   #onCloseEditButtonClick = null;
   #onSubmitButtonClick = null;
 
@@ -123,7 +123,7 @@ export default class EditFormView extends AbstractView {
   }
 
   get template() {
-    return createEditFormTemplate(this.#point, this.#destination, this.#allDestinations, this.#allOffers);
+    return createFormEditTemplate(this.#point, this.#destination, this.#allDestinations, this.#allOffers);
   }
 
   #setEventListeners() {
@@ -141,6 +141,6 @@ export default class EditFormView extends AbstractView {
 
   #submitButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmitButtonClick();
+    this.#onSubmitButtonClick(this.#point);
   };
 }

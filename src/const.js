@@ -14,6 +14,10 @@ const EmptyPhrase = {
   NO_PRESENT_POINTS: 'There are no present events now',
   NO_FUTURE_POINTS: 'There are no future events now',
 };
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 
 
-export { POINTS_TYPES, IS_FAVORITE_TYPES, FilterType, SORTING_TYPES, TIME_NULL, EmptyPhrase };
+export { POINTS_TYPES, IS_FAVORITE_TYPES, FilterType, SORTING_TYPES, TIME_NULL, EmptyPhrase, Mode };

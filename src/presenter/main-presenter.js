@@ -1,91 +1,79 @@
 import PointsListView from '../view/points-list-view';
-import PointsView from '../view/points-view';
-import EditFormView from '../view/edit-form-view';
-import noPointsView from '../view/no-points-view';
-// import AddFormView from '../view/add-form-view';
+import PointsEmptyView from '../view/points-empty-view';
 import { render } from '../framework/render';
-import { replace } from '../framework/render';
 import { EmptyPhrase } from '../const';
+import PointPresenter from './point-presenter';
+import { updateItem } from '../utils/common';
 
 export default class MainPresenter {
   #container = null;
-  #model = null;
-  #pointsListView = new PointsListView();
-  #pointsList = [];
+  #pointsModel = null;
+  #pointsList = new PointsListView();
+  #points = [];
+  #offersModel = [];
+  #destinationsModel = [];
+  #pointPresenters = new Map;
 
-  constructor({ container, pointsModel }) {
+  constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
-    this.#model = pointsModel;
+    this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#points = [...this.#pointsModel.points];
   }
 
   init() {
-    this.#pointsList = [...this.#model.points];
-    if (this.#pointsList.length === 0) {
-      render(new noPointsView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
-    } else {
-      this.#renderPointsList();
+    if (!this.#points.length) {
+      this.#renderPointsEmptyList();
+      return;
     }
+
+    this.#renderPointsList();
   }
+
+  #renderPointsEmptyList() {
+    render(new PointsEmptyView({ message: EmptyPhrase.NO_FUTURE_POINTS }), this.#container);
+  }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => {
+      presenter.resetView();
+    });
+  };
 
   #renderPointsList() {
-    render(this.#pointsListView, this.#container);
-    //форму добавления точки пока скрыла, так как в задании пока указано только про форму
-    // render(new AddFormView, this.pointsListView.element, RenderPosition.AFTERBEGIN);
-
-    for (let i = 0; i < this.#pointsList.length; i++) {
-      this.#renderPoints(this.#pointsList[i]);
-    }
+    render(this.#pointsList, this.#container);
+    this.#renderPoints(this.#points);
   }
 
-  #renderPoints(pointsList) {
+  #renderPoints() {
+    this.#points.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  }
 
-    function escKeyDownHandler(evt) {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    }
-
-    function onOpenEditButtonClick() {
-      replacePointToEditForm();
-      document.addEventListener('keydown', escKeyDownHandler);
-    }
-
-    function onCloseEditButtonClick() {
-      replaceEditFormToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    }
-
-    function onSubmitButtonClick() {
-      replaceEditFormToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    }
-
-    const editFormComponent = new EditFormView({
-      point: this.#pointsList[0],
-      destination: this.#model.getDestinationsById(this.#pointsList[0].destination),
-      allDestinations: this.#model.destinations,
-      allOffers: this.#model.getOffersByType(this.#pointsList[0].type),
-      onCloseEditButtonClick,
-      onSubmitButtonClick
+  #renderPoint(point) {
+    const pointPresenter = new PointPresenter({
+      pointsListComponent: this.#pointsList,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     });
 
-    const pointComponent = new PointsView({
-      point: pointsList,
-      destination: this.#model.getDestinationsById(pointsList.destination),
-      offers: this.#model.getOffersById(pointsList.type, pointsList.offers),
-      onOpenEditButtonClick
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  #clearPointsList() {
+    this.#pointPresenters.forEach((presenter) => {
+      presenter.destroy();
     });
-
-    function replacePointToEditForm() {
-      replace(editFormComponent, pointComponent);
-    }
-
-    function replaceEditFormToPoint() {
-      replace(pointComponent, editFormComponent);
-    }
-
-    render(pointComponent, this.#pointsListView.element);
+    this.#pointPresenters.clear();
   }
 }
