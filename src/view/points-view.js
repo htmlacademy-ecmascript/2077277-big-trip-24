@@ -67,8 +67,8 @@ function createPointsTemplate(point, destination, offers) {
 }
 
 export default class PointsView extends AbstractView {
-  #point = [];
-  #destination = [];
+  #point = null;
+  #destination = null;
   #offers = [];
   #onOpenEditButtonClick = null;
   #onFavoriteClick = null;

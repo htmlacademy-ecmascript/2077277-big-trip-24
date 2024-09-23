@@ -1,4 +1,5 @@
-const POINTS_TYPES = ['taxi', 'flight', 'train', 'ship', 'check-in', 'sightseeing', 'bus', 'drive', 'restaurant'];
+const POINTS_TYPES = ['taxi', 'flight', 'train', 'ship', 'check-in', 'sightseeing',
+  'bus', 'drive', 'restaurant'];
 const IS_FAVORITE_TYPES = [0, 1];
 const FilterType = {
   EVERYTHING: 'everything',
@@ -6,7 +7,20 @@ const FilterType = {
   PRESENT: 'present',
   PAST: 'past',
 };
-const SORTING_TYPES = ['day', 'event', 'time', 'price', 'offer'];
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+const enabledSortType = {
+  [SortType.DAY]: true,
+  [SortType.EVENT]: false,
+  [SortType.TIME]: true,
+  [SortType.PRICE]: true,
+  [SortType.OFFERS]: false,
+};
 const TIME_NULL = '00';
 const EmptyPhrase = {
   NO_POINTS: 'Click New Event to create your first point',
@@ -20,4 +34,7 @@ const Mode = {
 };
 
 
-export { POINTS_TYPES, IS_FAVORITE_TYPES, FilterType, SORTING_TYPES, TIME_NULL, EmptyPhrase, Mode };
+export {
+  POINTS_TYPES, IS_FAVORITE_TYPES, FilterType, SortType, TIME_NULL, EmptyPhrase,
+  Mode, enabledSortType
+};

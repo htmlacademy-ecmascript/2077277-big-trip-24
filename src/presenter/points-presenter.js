@@ -1,18 +1,30 @@
 import PointsListView from '../view/points-list-view';
 import PointsEmptyView from '../view/points-empty-view';
-import { render } from '../framework/render';
-import { EmptyPhrase } from '../const';
+import SortingView from '../view/sorting-view';
+import { render, RenderPosition } from '../framework/render';
+import { EmptyPhrase, enabledSortType } from '../const';
 import PointPresenter from './point-presenter';
 import { updateItem } from '../utils/common';
+import { SortType } from '../const';
+import { sorting } from '../utils/task';
 
-export default class MainPresenter {
+export default class PointsPresenter {
   #container = null;
-  #pointsModel = null;
+  #pointsModel = [];
   #pointsList = new PointsListView();
   #points = [];
   #offersModel = [];
   #destinationsModel = [];
   #pointPresenters = new Map;
+  #sortComponent = null;
+  #currentSortType = SortType.DAY;
+  #sortTypes = Object.values(SortType).map((type) => (
+    {
+      type,
+      isChecked: type === this.#currentSortType,
+      isDisabled: !enabledSortType[type]
+    }));
+
 
   constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
@@ -27,7 +39,7 @@ export default class MainPresenter {
       this.#renderPointsEmptyList();
       return;
     }
-
+    this.#renderSort();
     this.#renderPointsList();
   }
 
@@ -46,9 +58,29 @@ export default class MainPresenter {
     });
   };
 
+  #sortPoints = (sortType) => {
+    this.#currentSortType = sortType;
+    this.#points = sorting[this.#currentSortType](this.#points);
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    this.#sortPoints(sortType);
+    this.#clearPoints();
+    this.#renderPoints();
+  };
+
+  #renderSort() {
+    this.#sortComponent = new SortingView({
+      sortTypes: this.#sortTypes,
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+  }
+
   #renderPointsList() {
     render(this.#pointsList, this.#container);
-    this.#renderPoints(this.#points);
+    this.#handleSortTypeChange(this.#currentSortType);
   }
 
   #renderPoints() {
@@ -70,7 +102,7 @@ export default class MainPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #clearPointsList() {
+  #clearPoints() {
     this.#pointPresenters.forEach((presenter) => {
       presenter.destroy();
     });

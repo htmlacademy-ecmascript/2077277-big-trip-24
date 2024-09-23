@@ -1,6 +1,5 @@
-import SortingView from './view/sorting-view';
 import FiltersView from './view/filters-view';
-import MainPresenter from './presenter/main-presenter';
+import PointsPresenter from './presenter/points-presenter';
 import HeaderPresenter from './presenter/header-presenter';
 import { render } from './framework/render';
 import PointsModel from './model/points-model';
@@ -17,12 +16,11 @@ const routeContainer = header.querySelector('.trip-main');
 const pointsModel = new PointsModel;
 const offersModel = new OffersModel;
 const destinationsModel = new DestinationsModel;
-const mainPresenter = new MainPresenter({ container: mainSection, pointsModel, offersModel, destinationsModel });
+const pointsPresenter = new PointsPresenter({ container: mainSection, pointsModel, offersModel, destinationsModel });
 const headerPresenter = new HeaderPresenter(routeContainer);
 const filters = generateFilters(pointsModel.points);
 
-render(new SortingView, mainSection);
 render(new FiltersView({filters}), filtersContainer);
 
 headerPresenter.init();
-mainPresenter.init();
+pointsPresenter.init();
