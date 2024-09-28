@@ -103,10 +103,10 @@ function createFormEditTemplate(point, destination, allDestinations, allOffers) 
             </li>`;
 }
 export default class FormEditView extends AbstractView {
-  #point = [];
-  #destination = [];
+  #point = null;
+  #destination = null;
   #allDestinations = [];
-  #allOffers = [];
+  #allOffers = null;
   #onCloseEditButtonClick = null;
   #onSubmitButtonClick = null;
 

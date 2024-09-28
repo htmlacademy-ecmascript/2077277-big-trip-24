@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { SortType } from '../const';
 dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -40,4 +41,34 @@ function isPastPoint(point) {
   return point.dateTo && dayjs().isAfter(point.dateTo, 'minute');
 }
 
-export { humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize, isFuturePoint, isPresentPoint, isPastPoint };
+function getPointsByDate(pointA, pointB) {
+  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+}
+
+function getPointsByPrice(pointA, pointB) {
+  return pointB.basePrice - pointA.basePrice;
+}
+
+function getPointsByTime(pointA, pointB) {
+  const pointADuration = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const pointBDuration = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return pointBDuration - pointADuration;
+}
+
+const sorting = {
+  [SortType.DAY]: (points) => points.toSorted(getPointsByDate),
+  [SortType.EVENT]: () => {
+    throw new Error(`Sort by ${SortType.EVENT} is disabled`);
+  },
+  [SortType.TIME]: (points) => points.toSorted(getPointsByTime),
+  [SortType.PRICE]: (points) => points.toSorted(getPointsByPrice),
+  [SortType.OFFERS]: () => {
+    throw new Error(`Sort by ${SortType.OFFERS} is disabled`);
+  },
+};
+
+export {
+  humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize,
+  isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
+  getPointsByTime, sorting
+};
