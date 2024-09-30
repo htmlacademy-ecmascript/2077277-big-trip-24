@@ -1,12 +1,12 @@
 import PointsListView from '../view/points-list-view';
 import PointsEmptyView from '../view/points-empty-view';
-import SortingView from '../view/sorting-view';
-import { render, RenderPosition } from '../framework/render';
-import { EmptyPhrase, enabledSortType } from '../const';
+import { render } from '../framework/render';
+import { EmptyPhrase } from '../const';
 import PointPresenter from './point-presenter';
 import { updateItem } from '../utils/common';
 import { SortType } from '../const';
 import { sorting } from '../utils/task';
+import SortPresenter from './sort-presenter';
 
 export default class PointsPresenter {
   #container = null;
@@ -16,15 +16,7 @@ export default class PointsPresenter {
   #offersModel = [];
   #destinationsModel = [];
   #pointPresenters = new Map;
-  #sortComponent = null;
   #currentSortType = SortType.DAY;
-  #sortTypes = Object.values(SortType).map((type) => (
-    {
-      type,
-      isChecked: type === this.#currentSortType,
-      isDisabled: !enabledSortType[type]
-    }));
-
 
   constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
@@ -70,12 +62,12 @@ export default class PointsPresenter {
   };
 
   #renderSort() {
-    this.#sortComponent = new SortingView({
-      sortTypes: this.#sortTypes,
-      onSortTypeChange: this.#handleSortTypeChange
+    const sortPresenter = new SortPresenter({
+      container: this.#container, handleSortTypeChange: this.#handleSortTypeChange,
+      currentSortType: this.#currentSortType
     });
 
-    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+    sortPresenter.init();
   }
 
   #renderPointsList() {
