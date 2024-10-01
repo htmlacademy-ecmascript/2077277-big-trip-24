@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINTS_TYPES } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils/task';
 
@@ -22,7 +22,8 @@ function createFormEditTemplate(point, destination, allDestinations, allOffers) 
     const offerClass = offerTitle.split(' ').findLast((item) => item.length > 3).toLowerCase();
 
     return `<div class="event__offer-selector">
-               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerClass}-1" type="checkbox" name="event-offer-${offerClass}" ${checkedAttribute}>
+               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerClass}-1" type="checkbox"
+                name="event-offer-${offerClass}" ${checkedAttribute}>
                <label class="event__offer-label" for="event-offer-${offerClass}-1">
                   <span class="event__offer-title">${offerTitle}</span>
                   &plus;&euro;&nbsp;
@@ -102,7 +103,7 @@ function createFormEditTemplate(point, destination, allDestinations, allOffers) 
               </form>
             </li>`;
 }
-export default class FormEditView extends AbstractView {
+export default class FormEditView extends AbstractStatefulView {
   #point = null;
   #destination = null;
   #allDestinations = [];
@@ -114,6 +115,7 @@ export default class FormEditView extends AbstractView {
     onSubmitButtonClick }) {
     super();
     this.#point = point;
+    this._setState(FormEditView.parsePointToState(point, destination.id, allOffers.type));
     this.#destination = destination;
     this.#allDestinations = allDestinations;
     this.#allOffers = allOffers;
@@ -123,15 +125,34 @@ export default class FormEditView extends AbstractView {
   }
 
   get template() {
-    return createFormEditTemplate(this.#point, this.#destination, this.#allDestinations, this.#allOffers);
+    return createFormEditTemplate(this._state, this.#destination, this.#allDestinations, this.#allOffers);
   }
 
   #setEventListeners() {
+    // this.element.querySelector('.event__rollup-btn')
+    //   .addEventListener('click', this.#closeEditButtonClickHandler);
+
+    // this.element.querySelector('.event__save-btn')
+    //   .addEventListener('submit', this.#submitButtonClickHandler);
+
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#closeEditButtonClickHandler);
 
     this.element.querySelector('.event__save-btn')
       .addEventListener('submit', this.#submitButtonClickHandler);
+
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeListChangeHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#priceChangeHandler);
+  }
+
+  _restoreHandlers() {
+    this.#setEventListeners();
   }
 
   #closeEditButtonClickHandler = (evt) => {
@@ -141,6 +162,44 @@ export default class FormEditView extends AbstractView {
 
   #submitButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmitButtonClick(this.#point);
+    this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this.#point));
   };
+
+  #typeListChangeHandler = (evt) => {
+    evt.preventDefault();
+    const targetType = evt.target.value;
+    this.updateElement({
+      type: targetType
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    const targetDestination = evt.target.value;
+    const newDestination = this.#allDestinations.find((item) => item.name === targetDestination);
+    this.updateElement({
+      destination: newDestination.id
+    });
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    const newPrice = evt.target.value;
+    this._setState({
+      basePrice: newPrice
+    });
+  };
+
+  static parsePointToState(point, pointDestination, typeOffers) {
+    return {
+      ...point,
+      destination: pointDestination,
+      type: typeOffers
+    };
+  }
+
+  static parseStateToPoint(state) {
+    const point = { ...state };
+    return point;
+  }
 }
