@@ -63,8 +63,7 @@ export default class PointsPresenter {
 
   #renderSort() {
     const sortPresenter = new SortPresenter({
-      container: this.#container, handleSortTypeChange: this.#handleSortTypeChange,
-      currentSortType: this.#currentSortType
+      container: this.#container, handleSortTypeChange: this.#handleSortTypeChange
     });
 
     sortPresenter.init();

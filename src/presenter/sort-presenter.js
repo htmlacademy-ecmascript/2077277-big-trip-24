@@ -6,15 +6,14 @@ import { enabledSortType } from '../const';
 export default class SortPresenter {
   #container = null;
   #sortTypes = [];
-  #currentSortType = null;
   #sortComponent = null;
   #handleSortTypeChange = null;
+  #currentSortType = SortType.DAY;
 
 
-  constructor({ container, handleSortTypeChange, currentSortType }) {
+  constructor({ container, handleSortTypeChange }) {
     this.#container = container;
     this.#handleSortTypeChange = handleSortTypeChange;
-    this.currentSortType = currentSortType;
     this.#sortTypes = Object.values(SortType).map((type) => (
       {
         type,

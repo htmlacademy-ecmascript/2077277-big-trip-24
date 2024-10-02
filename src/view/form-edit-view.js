@@ -2,16 +2,18 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINTS_TYPES } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils/task';
 
-function createEventItemTemplate(eventType) {
-  return `<div class="event__type-item">
-              <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
-              <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${capitalize(eventType)}</label>
-          </div>`;
-}
+function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
-function createFormEditTemplate(point, destination, allDestinations, allOffers) {
+  const { type, basePrice, dateFrom, dateTo, typeOffer, destination } = point;
 
-  const { type, basePrice, dateFrom, dateTo } = point;
+  function createEventItemTemplate(eventType) {
+    const checkedAttribute = eventType === point.type ? 'checked' : '';
+
+    return `<div class="event__type-item">
+                <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${checkedAttribute}>
+                <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${capitalize(eventType)}</label>
+            </div>`;
+  }
 
   function createDestinationsTemplate(pointDestination) {
     return `<option value="${pointDestination}"></option>
@@ -32,10 +34,57 @@ function createFormEditTemplate(point, destination, allDestinations, allOffers) 
             </div>`;
   }
 
-  const createAvailableOffers = allOffers.offers.map((offer) => {
+  const createAvailableOffers = typeOffer.offers.map((offer) => {
     const checkedAttribute = point.offers.includes(offer.id) ? 'checked' : '';
     return createAvailableOffersTemplate(offer.title, offer.price, checkedAttribute);
   }).join('');
+
+  function createAvailableOffersSection() {
+    if (!typeOffer.offers.length) {
+      return '';
+    } else {
+      return `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createAvailableOffers}
+      </div>
+    </section>`;
+    }
+  }
+
+  function createAvailablePhotosTemplate(src, description) {
+    return `<img class="event__photo" src="${src}" alt="${description}">`;
+  }
+
+  const createAvailablePhotos = destination.pictures.map((picture) => createAvailablePhotosTemplate(picture.src, picture.description)).join('');
+
+  function createAvailableDestinationSection() {
+    if (!destination.description && !destination.pictures.length) {
+      return '';
+    } else {
+      return `<section class="event__section  event__section--destination">
+                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                    <p class="event__destination-description">${destination.description}</p>
+                    <div class="event__photos-container">
+                      <div class="event__photos-tape">
+                        ${createAvailablePhotos}
+                      </div>
+                    </div>
+                  </section>`;
+    }
+  }
+
+  const rollupButtonTemplate = !isNewPoint ?
+    `<button class="event__rollup-btn" type="button">
+                    <span class="visually-hidden">Open event</span>
+                  </button>`
+    : '';
+
+  const cancelOrDeleteButtonTemplate = !isNewPoint ?
+    `<button class="event__reset-btn" type="reset">Delete
+    </button>` :
+    `<button class="event__reset-btn" type="reset">Cancel
+    </button>`;
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -82,61 +131,55 @@ function createFormEditTemplate(point, destination, allDestinations, allOffers) 
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
-                    <span class="visually-hidden">Open event</span>
-                  </button>
+                  ${cancelOrDeleteButtonTemplate}
+                  ${rollupButtonTemplate}
                 </header>
                 <section class="event__details">
-                  <section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                    <div class="event__available-offers">
-                      ${createAvailableOffers}
-                    </div>
-                  </section>
-
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destination.description}</p>
-                  </section>
+                      ${createAvailableOffersSection()}
+                      ${createAvailableDestinationSection()}
                 </section>
               </form>
             </li>`;
 }
 export default class FormEditView extends AbstractStatefulView {
   #point = null;
-  #destination = null;
   #allDestinations = [];
-  #allOffers = null;
+  #allOffers = [];
   #onCloseEditButtonClick = null;
   #onSubmitButtonClick = null;
+  #isNewPoint = false;
 
-  constructor({ point, destination, allDestinations, allOffers, onCloseEditButtonClick,
+  constructor({ point, destination, allDestinations, typeOffer, allOffers, isNewPoint, onCloseEditButtonClick,
     onSubmitButtonClick }) {
     super();
     this.#point = point;
-    this._setState(FormEditView.parsePointToState(point, destination.id, allOffers.type));
-    this.#destination = destination;
+    this._setState(FormEditView.parsePointToState(point, destination, typeOffer));
     this.#allDestinations = allDestinations;
     this.#allOffers = allOffers;
+    this.#isNewPoint = isNewPoint ?? false;
     this.#onCloseEditButtonClick = onCloseEditButtonClick;
     this.#onSubmitButtonClick = onSubmitButtonClick;
     this.#setEventListeners();
   }
 
   get template() {
-    return createFormEditTemplate(this._state, this.#destination, this.#allDestinations, this.#allOffers);
+    return createFormEditTemplate(this._state, this.#allDestinations, this.#isNewPoint);
+  }
+
+  reset(point) {
+    this.updateElement({
+      ...point,
+      typeOffer: this.#allOffers.find((offer) => offer.type === point.type),
+      destination: this.#allDestinations.find((destination) => destination.id === point.destination)
+    });
   }
 
   #setEventListeners() {
-    // this.element.querySelector('.event__rollup-btn')
-    //   .addEventListener('click', this.#closeEditButtonClickHandler);
 
-    // this.element.querySelector('.event__save-btn')
-    //   .addEventListener('submit', this.#submitButtonClickHandler);
-
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeEditButtonClickHandler);
+    const rollupButton = this.element.querySelector('.event__rollup-btn');
+    if (rollupButton) {
+      rollupButton.addEventListener('click', this.#closeEditButtonClickHandler);
+    }
 
     this.element.querySelector('.event__save-btn')
       .addEventListener('submit', this.#submitButtonClickHandler);
@@ -168,8 +211,10 @@ export default class FormEditView extends AbstractStatefulView {
   #typeListChangeHandler = (evt) => {
     evt.preventDefault();
     const targetType = evt.target.value;
+    const typeOffer = this.#allOffers.find((item) => item.type === targetType);
     this.updateElement({
-      type: targetType
+      type: targetType,
+      typeOffer: typeOffer
     });
   };
 
@@ -178,7 +223,7 @@ export default class FormEditView extends AbstractStatefulView {
     const targetDestination = evt.target.value;
     const newDestination = this.#allDestinations.find((item) => item.name === targetDestination);
     this.updateElement({
-      destination: newDestination.id
+      destination: newDestination
     });
   };
 
@@ -190,11 +235,11 @@ export default class FormEditView extends AbstractStatefulView {
     });
   };
 
-  static parsePointToState(point, pointDestination, typeOffers) {
+  static parsePointToState(point, pointDestination, typeOffer) {
     return {
       ...point,
       destination: pointDestination,
-      type: typeOffers
+      typeOffer
     };
   }
 
