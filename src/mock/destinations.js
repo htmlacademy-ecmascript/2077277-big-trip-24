@@ -11,6 +11,10 @@ const destinations = [
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
         description: 'Chamonix parliament building'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
+        description: 'Chamonix parliament building'
       }
     ]
   },
@@ -22,6 +26,14 @@ const destinations = [
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
         description: 'Amsterdam is the capital of the Netherlands'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
+        description: 'Chamonix parliament building'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
+        description: 'Chamonix parliament building'
       }
     ]
   },
@@ -33,19 +45,18 @@ const destinations = [
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
         description: 'Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc'
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
+        description: 'Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc'
       }
     ]
   },
   {
     id: '4',
-    description: 'Moscow is the capital of Russia, a multinational city on the Moskva River in the western part of the country.',
+    description: '',
     name: 'Moscow',
-    pictures: [
-      {
-        src: `https://loremflickr.com/248/152?random=${getRandomInteger(MAX_RANDOM_INTEGER)}`,
-        description: 'Moscow is the capital of Russia, a multinational city on the Moskva River'
-      }
-    ]
+    pictures: []
   },
   {
     id: '5',
