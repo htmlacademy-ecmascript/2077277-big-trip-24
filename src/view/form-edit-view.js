@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINTS_TYPES } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils/task';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
@@ -148,6 +150,8 @@ export default class FormEditView extends AbstractStatefulView {
   #onCloseEditButtonClick = null;
   #onSubmitButtonClick = null;
   #isNewPoint = false;
+  #dateFromPicker = null;
+  #dateToPicker = null;
 
   constructor({ point, destination, allDestinations, typeOffer, allOffers, isNewPoint, onCloseEditButtonClick,
     onSubmitButtonClick }) {
@@ -192,6 +196,9 @@ export default class FormEditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#priceChangeHandler);
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   _restoreHandlers() {
@@ -234,6 +241,40 @@ export default class FormEditView extends AbstractStatefulView {
       basePrice: newPrice
     });
   };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this._setState({
+      dateFrom: userDate
+    });
+    this.#dateToPicker.set('minDate', userDate);
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this._setState({
+      dateTo: userDate
+    });
+  };
+
+  #setDateFromPicker() {
+    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateFrom,
+      'time_24hr': true,
+      onChange: this.#dateFromChangeHandler,
+    });
+  }
+
+  #setDateToPicker() {
+    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateTo,
+      'time_24hr': true,
+      onChange: this.#dateToChangeHandler,
+      minDate: this._state.dateFrom,
+    });
+  }
 
   static parsePointToState(point, pointDestination, typeOffer) {
     return {
