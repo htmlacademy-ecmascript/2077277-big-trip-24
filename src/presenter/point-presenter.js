@@ -1,7 +1,7 @@
 import PointsView from '../view/points-view';
 import FormEditView from '../view/form-edit-view';
 import { render, replace, remove } from '../framework/render';
-import { Mode } from '../const';
+import { Mode, UpdateType, UserAction } from '../const';
 
 export default class PointPresenter {
   #pointsListComponent = null;
@@ -111,12 +111,17 @@ export default class PointPresenter {
   };
 
   #onSubmitButtonClick = () => {
-    this.#handleDataChange(this.#point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR, this.#point);
     this.#replaceFormEditToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #onFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 }

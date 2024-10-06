@@ -3,6 +3,18 @@ import { POINTS_TYPES } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { nanoid } from 'nanoid';
+
+const DEFAULT_POINT = {
+  id: nanoid(),
+  basePrice: 0,
+  dateFrom: '',
+  dateTo: '',
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: POINTS_TYPES[1]
+};
 
 function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
@@ -36,13 +48,13 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
             </div>`;
   }
 
-  const createAvailableOffers = typeOffer.offers.map((offer) => {
+  const createAvailableOffers = typeOffer.offers ? (typeOffer.offers.map((offer) => {
     const checkedAttribute = point.offers.includes(offer.id) ? 'checked' : '';
     return createAvailableOffersTemplate(offer.title, offer.price, checkedAttribute);
-  }).join('');
+  }).join('')) : '';
 
   function createAvailableOffersSection() {
-    if (!typeOffer.offers.length) {
+    if (!typeOffer.offers || !typeOffer.offers.length) {
       return '';
     } else {
       return `<section class="event__section  event__section--offers">
@@ -58,10 +70,10 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
     return `<img class="event__photo" src="${src}" alt="${description}">`;
   }
 
-  const createAvailablePhotos = destination.pictures.map((picture) => createAvailablePhotosTemplate(picture.src, picture.description)).join('');
+  const createAvailablePhotos = destination.pictures ? (destination.pictures.map((picture) => createAvailablePhotosTemplate(picture.src, picture.description)).join('')) : '';
 
   function createAvailableDestinationSection() {
-    if (!destination.description && !destination.pictures.length) {
+    if (!destination.description && (!destination.pictures || !destination.pictures.length)) {
       return '';
     } else {
       return `<section class="event__section  event__section--destination">
@@ -152,9 +164,10 @@ export default class FormEditView extends AbstractStatefulView {
   #isNewPoint = false;
   #dateFromPicker = null;
   #dateToPicker = null;
+  #onDeleteClick = null;
 
-  constructor({ point, destination, allDestinations, typeOffer, allOffers, isNewPoint, onCloseEditButtonClick,
-    onSubmitButtonClick }) {
+  constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer = {}, allOffers, onCloseEditButtonClick,
+    onSubmitButtonClick, onDeleteClick, isNewPoint}) {
     super();
     this.#point = point;
     this._setState(FormEditView.parsePointToState(point, destination, typeOffer));
@@ -163,7 +176,10 @@ export default class FormEditView extends AbstractStatefulView {
     this.#isNewPoint = isNewPoint ?? false;
     this.#onCloseEditButtonClick = onCloseEditButtonClick;
     this.#onSubmitButtonClick = onSubmitButtonClick;
+    this.#onDeleteClick = onDeleteClick;
     this.#setEventListeners();
+
+
   }
 
   get template() {

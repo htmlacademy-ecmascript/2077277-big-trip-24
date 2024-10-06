@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { SortType } from '../const';
 dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -55,20 +54,8 @@ function getPointsByTime(pointA, pointB) {
   return pointBDuration - pointADuration;
 }
 
-const sorting = {
-  [SortType.DAY]: (points) => points.toSorted(getPointsByDate),
-  [SortType.EVENT]: () => {
-    throw new Error(`Sort by ${SortType.EVENT} is disabled`);
-  },
-  [SortType.TIME]: (points) => points.toSorted(getPointsByTime),
-  [SortType.PRICE]: (points) => points.toSorted(getPointsByPrice),
-  [SortType.OFFERS]: () => {
-    throw new Error(`Sort by ${SortType.OFFERS} is disabled`);
-  },
-};
-
 export {
   humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize,
   isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
-  getPointsByTime, sorting
+  getPointsByTime
 };
