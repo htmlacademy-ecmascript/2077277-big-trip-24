@@ -28,6 +28,7 @@ export default class SortingView extends AbstractView {
     super();
     this.#sortTypes = sortTypes;
     this.#onSortTypeChange = onSortTypeChange;
+
     this.#setEventListeners();
   }
 
