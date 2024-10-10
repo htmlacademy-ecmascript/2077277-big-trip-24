@@ -53,14 +53,6 @@ export default class PointsPresenter {
     return filteredPoints.sort(getPointsByDate);
   }
 
-  get destinations() {
-    return this.#pointsModel.destinations; //????
-  }
-
-  get offers() {
-    return this.#pointsModel.offers; //????
-  }
-
   init() {
     this.#renderBoard();
   }
@@ -171,7 +163,7 @@ export default class PointsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenters.get(data.id).init(data, this.offers, this.destinations);
+        this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();

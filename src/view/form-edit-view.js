@@ -4,6 +4,7 @@ import { capitalize, humanizeTaskDueDate } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { nanoid } from 'nanoid';
+import he from 'he';
 
 const DEFAULT_POINT = {
   id: nanoid(),
@@ -34,13 +35,12 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
     `;
   }
 
-  function createAvailableOffersTemplate(offerTitle, offerPrice, checkedAttribute) {
-    const offerClass = offerTitle.split(' ').findLast((item) => item.length > 3).toLowerCase();
+  function createAvailableOffersTemplate(offerTitle, offerPrice, checkedAttribute, offerId) {
 
     return `<div class="event__offer-selector">
-               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerClass}-1" type="checkbox"
-                name="event-offer-${offerClass}" ${checkedAttribute}>
-               <label class="event__offer-label" for="event-offer-${offerClass}-1">
+               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerId}-1" data-offer-id="${offerId}" type="checkbox"
+                name="event-offer-${offerId}" ${checkedAttribute}>
+               <label class="event__offer-label" for="event-offer-${offerId}-1">
                   <span class="event__offer-title">${offerTitle}</span>
                   &plus;&euro;&nbsp;
                   <span class="event__offer-price">${offerPrice}</span>
@@ -50,7 +50,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
   const createAvailableOffers = typeOffer.offers ? (typeOffer.offers.map((offer) => {
     const checkedAttribute = point.offers.includes(offer.id) ? 'checked' : '';
-    return createAvailableOffersTemplate(offer.title, offer.price, checkedAttribute);
+    return createAvailableOffersTemplate(offer.title, offer.price, checkedAttribute, offer.id);
   }).join('')) : '';
 
   function createAvailableOffersSection() {
@@ -122,7 +122,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${point.type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(String(destination.name ?? ''))}" list="destination-list-1" required>
                     <datalist id="destination-list-1">
                       ${allDestinations.map((pointDestination) => createDestinationsTemplate(pointDestination.name)).join('')}
                     </datalist>
@@ -141,7 +141,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${he.encode(String(basePrice))}" min="1" required>
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -167,7 +167,7 @@ export default class FormEditView extends AbstractStatefulView {
   #onDeleteClick = null;
 
   constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer = {}, allOffers, onCloseEditButtonClick,
-    onSubmitButtonClick, onDeleteClick, isNewPoint}) {
+    onSubmitButtonClick, onDeleteClick, isNewPoint }) {
     super();
     this.#point = point;
     this._setState(FormEditView.parsePointToState(point, destination, typeOffer));
@@ -178,8 +178,6 @@ export default class FormEditView extends AbstractStatefulView {
     this.#onSubmitButtonClick = onSubmitButtonClick;
     this.#onDeleteClick = onDeleteClick;
     this.#setEventListeners();
-
-
   }
 
   get template() {
@@ -201,7 +199,7 @@ export default class FormEditView extends AbstractStatefulView {
       rollupButton.addEventListener('click', this.#closeEditButtonClickHandler);
     }
 
-    this.element.querySelector('.event__save-btn')
+    this.element.querySelector('form')
       .addEventListener('submit', this.#submitButtonClickHandler);
 
     this.element.querySelector('.event__type-group')
@@ -212,6 +210,9 @@ export default class FormEditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#priceChangeHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#deleteClickHandler);
 
     this.#setDateFromPicker();
     this.#setDateToPicker();
@@ -228,13 +229,21 @@ export default class FormEditView extends AbstractStatefulView {
 
   #submitButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this.#point));
+    const dateFrom = this.element.querySelector('#event-start-time-1').value;
+    const dateTo = this.element.querySelector('#event-end-time-1').value;
+
+    if (dateFrom === '' || dateTo === '') {
+      return;
+    }
+    this.#offerChangeHandler();
+    this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this._state));
   };
 
   #typeListChangeHandler = (evt) => {
     evt.preventDefault();
     const targetType = evt.target.value;
     const typeOffer = this.#allOffers.find((item) => item.type === targetType);
+
     this.updateElement({
       type: targetType,
       typeOffer: typeOffer
@@ -245,6 +254,12 @@ export default class FormEditView extends AbstractStatefulView {
     evt.preventDefault();
     const targetDestination = evt.target.value;
     const newDestination = this.#allDestinations.find((item) => item.name === targetDestination);
+
+    if (newDestination === undefined) {
+      evt.target.value = '';
+      return;
+    }
+
     this.updateElement({
       destination: newDestination
     });
@@ -255,6 +270,18 @@ export default class FormEditView extends AbstractStatefulView {
     const newPrice = evt.target.value;
     this._setState({
       basePrice: newPrice
+    });
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteClick(FormEditView.parseStateToPoint(this._state));
+  };
+
+  #offerChangeHandler = () => {
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    this._setState({
+      offers: checkedOffers.map((offer) => offer.dataset.offerId)
     });
   };
 
@@ -301,7 +328,10 @@ export default class FormEditView extends AbstractStatefulView {
   }
 
   static parseStateToPoint(state) {
-    const point = { ...state };
+    const point = {
+      ...state,
+      destination: state.destination.id
+    };
     return point;
   }
 }

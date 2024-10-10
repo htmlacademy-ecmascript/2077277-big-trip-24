@@ -46,7 +46,8 @@ export default class PointPresenter {
       typeOffer: this.#offersModel.getOffersByType(point.type),
       allOffers: this.#offersModel.offers,
       onCloseEditButtonClick: this.#onCloseEditButtonClick,
-      onSubmitButtonClick: this.#onSubmitButtonClick
+      onSubmitButtonClick: this.#onSubmitButtonClick,
+      onDeleteClick: this.#handleFormSubmit,
     });
 
     if (!prevPointComponent || !prevFormEditComponent) {
@@ -110,10 +111,11 @@ export default class PointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onSubmitButtonClick = () => {
+  #onSubmitButtonClick = (point) => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR, this.#point);
+      UpdateType.MINOR,
+      {...point });
     this.#replaceFormEditToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
@@ -121,7 +123,16 @@ export default class PointPresenter {
   #onFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
+  };
+
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite});
+      point,
+    );
+    this.destroy();
   };
 }

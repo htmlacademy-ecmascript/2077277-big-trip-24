@@ -3,12 +3,14 @@ import { UserAction, UpdateType } from '../const';
 import { nanoid } from 'nanoid';
 import FormEditView from '../view/form-edit-view';
 import DestinationsModel from '../model/destinations-model';
+import OffersModel from '../model/offers-model';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
   #destinationsModel = new DestinationsModel;
+  #offersModel = new OffersModel;
 
   #pointAddComponent = null;
 
@@ -27,6 +29,7 @@ export default class NewPointPresenter {
       onSubmitButtonClick: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
       allDestinations: this.#destinationsModel.destinations,
+      allOffers: this.#offersModel.offers,
       isNewPoint: true
     });
 
@@ -52,7 +55,6 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-
       {id: nanoid(), ...point},
     );
     this.destroy();
