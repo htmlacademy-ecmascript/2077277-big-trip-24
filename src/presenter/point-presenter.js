@@ -1,7 +1,7 @@
 import PointsView from '../view/points-view';
 import FormEditView from '../view/form-edit-view';
 import { render, replace, remove } from '../framework/render';
-import { Mode } from '../const';
+import { Mode, UpdateType, UserAction } from '../const';
 
 export default class PointPresenter {
   #pointsListComponent = null;
@@ -46,7 +46,8 @@ export default class PointPresenter {
       typeOffer: this.#offersModel.getOffersByType(point.type),
       allOffers: this.#offersModel.offers,
       onCloseEditButtonClick: this.#onCloseEditButtonClick,
-      onSubmitButtonClick: this.#onSubmitButtonClick
+      onSubmitButtonClick: this.#onSubmitButtonClick,
+      onDeleteClick: this.#handleFormSubmit,
     });
 
     if (!prevPointComponent || !prevFormEditComponent) {
@@ -110,13 +111,28 @@ export default class PointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onSubmitButtonClick = () => {
-    this.#handleDataChange(this.#point);
+  #onSubmitButtonClick = (point) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...point });
     this.#replaceFormEditToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #onFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
+  };
+
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+    this.destroy();
   };
 }
