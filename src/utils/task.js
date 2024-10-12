@@ -6,10 +6,6 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
-function getRandomDate(start, end) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
-
 function getDifferenceTime(start, end) {
   return (dayjs.duration(dayjs(end)
     .set('seconds', 0)
@@ -55,7 +51,7 @@ function getPointsByTime(pointA, pointB) {
 }
 
 export {
-  humanizeTaskDueDate, getRandomDate, getDifferenceTime, capitalize,
+  humanizeTaskDueDate, getDifferenceTime, capitalize,
   isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
   getPointsByTime
 };

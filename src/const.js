@@ -32,6 +32,7 @@ const EmptyPhrase = {
   [FilterType.PAST]: 'There are no past events now',
   [FilterType.PRESENT]: 'There are no present events now',
   [FilterType.FUTURE]: 'There are no future events now',
+  LOADING: 'Loading...'
 };
 
 const Mode = {
@@ -49,9 +50,20 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+const AUTHORIZATION = 'Basic er88gh56ddw';
+const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
 
 export {
   POINTS_TYPES, IS_FAVORITE_TYPES, FilterType, SortType, TIME_NULL, EmptyPhrase,
-  Mode, enabledSortType, UpdateType, UserAction
+  Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT
 };

@@ -7,16 +7,20 @@ import FilterPresenter from './presenter/filter-presenter';
 import FilterModel from './model/filter-model';
 import NewPointButtonView from './view/new-point-button-view';
 import { render, RenderPosition } from './framework/render';
+import PointApiService from './service/point-api-service';
+import { AUTHORIZATION, END_POINT } from './const';
 
+const apiService = new PointApiService(END_POINT, AUTHORIZATION);
 const main = document.querySelector('.page-body__page-main');
 const mainSection = main.querySelector('.trip-events');
 const header = document.querySelector('.page-header');
 const filtersContainer = header.querySelector('.trip-controls__filters');
 const routeContainer = header.querySelector('.trip-main');
-const pointsModel = new PointsModel;
-const offersModel = new OffersModel;
-const destinationsModel = new DestinationsModel;
+const offersModel = new OffersModel({ offersApiService: apiService });
+const destinationsModel = new DestinationsModel({ destinationsApiService: apiService });
+const pointsModel = new PointsModel({ pointsApiService: apiService });
 const filterModel = new FilterModel;
+
 
 const pointsPresenter = new PointsPresenter({
   container: mainSection,
@@ -48,8 +52,12 @@ function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
 
-render(newPointButtonComponent, routeContainer, RenderPosition.BEFOREEND);
-
 headerPresenter.init();
 pointsPresenter.init();
 filterPresenter.init();
+offersModel.init();
+destinationsModel.init();
+pointsModel.init()
+  .finally(() => {
+    render(newPointButtonComponent, routeContainer, RenderPosition.BEFOREEND);
+  });

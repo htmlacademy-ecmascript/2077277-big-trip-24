@@ -21,7 +21,9 @@ export default class PointsPresenter {
   #currentFilterType = FilterType.EVERYTHING;
   #sortPresenter = null;
   #pointsEmptyList = null;
+  #pointsLoading = null;
   #newPointPresenter = null;
+  #isLoading = true;
 
   constructor({ container, pointsModel, filterModel, offersModel, destinationsModel, onNewPointDestroy }) {
     this.#container = container;
@@ -64,6 +66,11 @@ export default class PointsPresenter {
   }
 
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.points.length) {
       this.#renderPointsEmptyList();
       return;
@@ -79,7 +86,7 @@ export default class PointsPresenter {
   }
 
   #renderPointsEmptyList() {
-    this.#pointsEmptyList = new PointsEmptyView ({ message: EmptyPhrase[this.#currentFilterType] });
+    this.#pointsEmptyList = new PointsEmptyView({ message: EmptyPhrase[this.#currentFilterType] });
     render(this.#pointsEmptyList, this.#container);
   }
 
@@ -150,6 +157,7 @@ export default class PointsPresenter {
     this.#pointPresenters.clear();
 
     this.#sortPresenter.removeSortComponent();
+    remove(this.#pointsLoading);
 
     if (this.#pointsEmptyList) {
       remove(this.#pointsEmptyList);
@@ -158,6 +166,11 @@ export default class PointsPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
+  }
+
+  #renderLoading() {
+    this.#pointsLoading = new PointsEmptyView({ message: EmptyPhrase.LOADING });
+    render(this.#pointsLoading, this.#container);
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -171,6 +184,11 @@ export default class PointsPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({ resetSortType: true });
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#pointsLoading);
         this.#renderBoard();
         break;
     }
