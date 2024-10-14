@@ -34,7 +34,9 @@ export default class PointsPresenter {
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#pointsList.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy
+      onDestroy: onNewPointDestroy,
+      destinationsModel: destinationsModel,
+      offersModel: offersModel
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);

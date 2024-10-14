@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINTS_TYPES } from '../const';
-import { capitalize, humanizeTaskDueDate } from '../utils/task';
+import { capitalize, humanizeTaskDueDate, isDatesEqual } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { nanoid } from 'nanoid';
@@ -122,7 +122,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${point.type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(String(destination.name ?? ''))}" list="destination-list-1" required>
+                    <input class="event__input  event__input--destination" id="event-destination-1" data-id="${destination.id ?? ''}" type="text" name="event-destination" value="${he.encode(String(destination.name ?? ''))}" list="destination-list-1" required>
                     <datalist id="destination-list-1">
                       ${allDestinations.map((pointDestination) => createDestinationsTemplate(pointDestination.name)).join('')}
                     </datalist>
@@ -141,7 +141,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${he.encode(String(basePrice))}" min="1" required>
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" min="1" max="100000" required>
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -236,6 +236,20 @@ export default class FormEditView extends AbstractStatefulView {
       return;
     }
     this.#offerChangeHandler();
+
+    const isPriceEqual = this._state.basePrice === this.#point.basePrice;
+    const isTypeOffersEqual = this._state.type === this.#point.type;
+    const targetDestination = this.element.querySelector('.event__input--destination').dataset.id;
+    const isDestinationEqual = targetDestination === this.#point.destination;
+    const isOffersEqual = this._state.offers.every((offer) => this.#point.offers.includes(offer)) && this.#point.offers.every((offer) => this._state.offers.includes(offer));
+    const isDatesFromEqual = isDatesEqual(this._state.dateFrom, this.#point.dateFrom);
+    const isDatesToEqual = isDatesEqual(this._state.dateTo, this.#point.dateTo);
+
+    if (isPriceEqual && isTypeOffersEqual && isDestinationEqual && isOffersEqual && isDatesFromEqual && isDatesToEqual) {
+      this.#onCloseEditButtonClick();
+      return;
+    }
+
     this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this._state));
   };
 
@@ -267,7 +281,7 @@ export default class FormEditView extends AbstractStatefulView {
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
-    const newPrice = evt.target.value;
+    const newPrice = Number(evt.target.value);
     this._setState({
       basePrice: newPrice
     });
@@ -328,6 +342,7 @@ export default class FormEditView extends AbstractStatefulView {
   }
 
   static parseStateToPoint(state) {
+    delete state.typeOffer;
     const point = {
       ...state,
       destination: state.destination.id

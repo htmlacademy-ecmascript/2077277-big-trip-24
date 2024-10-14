@@ -20,6 +20,6 @@ export default class DestinationsModel {
 
   getDestinationsById(id) {
     const allDestinations = this.destinations;
-    return allDestinations.find((item) => item.id === id);
+    return allDestinations.length ? allDestinations.find((item) => item.id === id) : {};
   }
 }

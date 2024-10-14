@@ -50,8 +50,12 @@ function getPointsByTime(pointA, pointB) {
   return pointBDuration - pointADuration;
 }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 export {
   humanizeTaskDueDate, getDifferenceTime, capitalize,
   isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
-  getPointsByTime
+  getPointsByTime, isDatesEqual
 };
