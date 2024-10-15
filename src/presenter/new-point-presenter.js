@@ -2,22 +2,22 @@ import { render, RenderPosition, remove } from '../framework/render';
 import { UserAction, UpdateType } from '../const';
 import { nanoid } from 'nanoid';
 import FormEditView from '../view/form-edit-view';
-import DestinationsModel from '../model/destinations-model';
-import OffersModel from '../model/offers-model';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-  #destinationsModel = new DestinationsModel;
-  #offersModel = new OffersModel;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #pointAddComponent = null;
 
-  constructor({pointListContainer, onDataChange, onDestroy}) {
+  constructor({ pointListContainer, onDataChange, onDestroy, destinationsModel, offersModel }) {
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init() {
@@ -55,7 +55,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      { id: nanoid(), ...point },
     );
     this.destroy();
   };
