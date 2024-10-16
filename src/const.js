@@ -30,9 +30,10 @@ const EmptyPhrase = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.PAST]: 'There are no past events now',
   [FilterType.PRESENT]: 'There are no present events now',
-  [FilterType.FUTURE]: 'There are no future events now',
-  LOADING: 'Loading...'
+  [FilterType.FUTURE]: 'There are no future events now'
 };
+
+const LOADING_MASSAGE = 'Loading...';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -62,7 +63,13 @@ const Method = {
 const AUTHORIZATION = 'Basic er88gh56ddw';
 const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export {
   POINTS_TYPES, FilterType, SortType, TIME_NULL, EmptyPhrase,
-  Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT
+  Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT,
+  LOADING_MASSAGE, TimeLimit
 };
