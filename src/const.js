@@ -34,6 +34,7 @@ const EmptyPhrase = {
 };
 
 const LOADING_MASSAGE = 'Loading...';
+const FAILED_MASSAGE = 'Failed to load latest route information';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -50,7 +51,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
+  ERROR: 'ERROR'
 };
 
 const Method = {
@@ -68,8 +70,11 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const EMPTY_PRICE = 0;
+const DESTINATIONS_COUNT = 3;
+
 export {
   POINTS_TYPES, FilterType, SortType, TIME_NULL, EmptyPhrase,
   Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT,
-  LOADING_MASSAGE, TimeLimit
+  LOADING_MASSAGE, TimeLimit, FAILED_MASSAGE, EMPTY_PRICE, DESTINATIONS_COUNT
 };
