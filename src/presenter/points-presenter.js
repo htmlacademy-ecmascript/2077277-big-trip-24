@@ -6,7 +6,7 @@ import SortPresenter from './sort-presenter';
 import { UpdateType, FilterType, SortType, UserAction, } from '../const';
 import { filter } from '../utils/filter';
 import { getPointsByDate, getPointsByPrice, getPointsByTime } from '../utils/task';
-import { EmptyPhrase, LOADING_MASSAGE, TimeLimit } from '../const';
+import { EmptyPhrase, LOADING_MASSAGE, TimeLimit, FAILED_MASSAGE } from '../const';
 import NewPointPresenter from './new-point-presenter';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 
@@ -23,8 +23,10 @@ export default class PointsPresenter {
   #sortPresenter = null;
   #pointsEmptyList = null;
   #pointsLoading = null;
+  #pointsError = null;
   #newPointPresenter = null;
   #isLoading = true;
+  #onNewPointDestroy = null;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -36,10 +38,11 @@ export default class PointsPresenter {
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+    this.#onNewPointDestroy = onNewPointDestroy;
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#pointsList.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy,
+      onDestroy: this.#onNewPointDestroy,
       destinationsModel: destinationsModel,
       offersModel: offersModel
     });
@@ -198,6 +201,11 @@ export default class PointsPresenter {
     render(this.#pointsLoading, this.#container);
   }
 
+  #renderError() {
+    this.#pointsError = new PointsEmptyView({ message: FAILED_MASSAGE });
+    render(this.#pointsError, this.#container);
+  }
+
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -215,6 +223,12 @@ export default class PointsPresenter {
         this.#isLoading = false;
         remove(this.#pointsLoading);
         this.#renderBoard();
+        this.#onNewPointDestroy();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#pointsLoading);
+        this.#renderError();
         break;
     }
   };

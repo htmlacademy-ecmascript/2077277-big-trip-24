@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { UpdateType } from '../const';
+import { UpdateType, FAILED_MASSAGE } from '../const';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -24,11 +24,14 @@ export default class PointsModel extends Observable {
       await this.#destinationsModel.init();
       const points = await this.#pointsApiService.points;
       this.#points = points.map(this.#adaptToClient);
+
+      this._notify(UpdateType.INIT);
     } catch (err) {
       this.#points = [];
-    }
 
-    this._notify(UpdateType.INIT);
+      this._notify(UpdateType.ERROR);
+      throw new Error(FAILED_MASSAGE);
+    }
   }
 
   async updatePoint(updateType, update) {
