@@ -36,7 +36,7 @@ function isPastPoint(point) {
   return point.dateTo && dayjs().isAfter(point.dateTo, 'minute');
 }
 
-function getPointsByDate(pointA, pointB) {
+function getPointsByDate(pointB, pointA) {
   return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
 }
 
