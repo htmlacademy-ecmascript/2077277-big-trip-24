@@ -1,4 +1,4 @@
-import { render, remove } from '../framework/render';
+import { render, remove, RenderPosition } from '../framework/render';
 import SortingView from '../view/sorting-view';
 import { SortType } from '../const';
 import { enabledSortType } from '../const';
@@ -29,7 +29,7 @@ export default class SortPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
-    render(this.#sortComponent, this.#container);
+    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   removeSortComponent() {

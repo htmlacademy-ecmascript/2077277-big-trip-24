@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../framework/render';
-import { UserAction, UpdateType } from '../const';
+import { UserAction, UpdateType} from '../const';
 import FormEditView from '../view/form-edit-view';
 
 export default class NewPointPresenter {
@@ -24,11 +24,14 @@ export default class NewPointPresenter {
       return;
     }
 
+    const newPointTypeOffer = this.#offersModel.getOffersByType('flight');
+
     this.#pointAddComponent = new FormEditView({
       onSubmitButtonClick: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
       allDestinations: this.#destinationsModel.destinations,
       allOffers: this.#offersModel.offers,
+      typeOffer: newPointTypeOffer,
       isNewPoint: true
     });
 

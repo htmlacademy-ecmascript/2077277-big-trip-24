@@ -55,12 +55,12 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
     if (!typeOffer.offers || !typeOffer.offers.length) {
       return '';
     } else {
-      return `<section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      return `<section class="event__section event__section--offers">
+                  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
         ${createAvailableOffers}
       </div>
-    </section>`;
+      </section>`;
     }
   }
 
@@ -153,8 +153,10 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                   ${rollupButtonTemplate}
                 </header>
                 <section class="event__details">
-                      ${createAvailableOffersSection()}
-                      ${createAvailableDestinationSection()}
+
+                     ${createAvailableOffersSection()}
+
+                    ${createAvailableDestinationSection()}
                 </section>
               </form>
             </li>`;
@@ -170,7 +172,7 @@ export default class FormEditView extends AbstractStatefulView {
   #dateToPicker = null;
   #onDeleteClick = null;
 
-  constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer = {}, allOffers, onCloseEditButtonClick,
+  constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer, allOffers, onCloseEditButtonClick,
     onSubmitButtonClick, onDeleteClick, isNewPoint }) {
     super();
     this.#point = point;

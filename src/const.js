@@ -24,8 +24,6 @@ const enabledSortType = {
   [SortType.OFFERS]: false,
 };
 
-const TIME_NULL = '00';
-
 const EmptyPhrase = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.PAST]: 'There are no past events now',
@@ -74,7 +72,7 @@ const EMPTY_PRICE = 0;
 const DESTINATIONS_COUNT = 3;
 
 export {
-  POINTS_TYPES, FilterType, SortType, TIME_NULL, EmptyPhrase,
+  POINTS_TYPES, FilterType, SortType, EmptyPhrase,
   Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT,
   LOADING_MASSAGE, TimeLimit, FAILED_MASSAGE, EMPTY_PRICE, DESTINATIONS_COUNT
 };

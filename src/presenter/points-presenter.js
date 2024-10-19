@@ -72,10 +72,15 @@ export default class PointsPresenter {
   createPoint() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    if(this.#pointsEmptyList) {
+      remove(this.#pointsEmptyList);
+    }
     this.#newPointPresenter.init();
   }
 
   #renderBoard() {
+    render(this.#pointsList, this.#container);
+
     if (this.#isLoading) {
       this.#renderLoading();
       return;
@@ -90,8 +95,6 @@ export default class PointsPresenter {
   }
 
   #renderPointsList() {
-    render(this.#pointsList, this.#container);
-
     this.#renderPoints();
   }
 
@@ -184,7 +187,10 @@ export default class PointsPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
-    this.#sortPresenter.removeSortComponent();
+    if(this.#sortPresenter){
+      this.#sortPresenter.removeSortComponent();
+    }
+
     remove(this.#pointsLoading);
 
     if (this.#pointsEmptyList) {

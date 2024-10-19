@@ -7,11 +7,27 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 function getDifferenceTime(start, end) {
-  return (dayjs.duration(dayjs(end)
-    .set('seconds', 0)
-    .set('millisecond', 0)
-    .diff(dayjs(start).set('seconds', 0).set('millisecond', 0))))
-    .format('DD,HH,mm');
+  const startTime = dayjs(start).startOf('minute');
+  const endTime = dayjs(end).startOf('minute');
+  const diffMilliseconds = endTime.diff(startTime);
+
+  const diffDuration = dayjs.duration(diffMilliseconds);
+  const days = (Math.floor(diffDuration.asDays())).toString().padStart(2, '0');
+  const hours = diffDuration.hours().toString().padStart(2, '0');
+  const minutes = diffDuration.minutes().toString().padStart(2, '0');
+
+  const parts = [];
+  if (days > 0) {
+    parts.push(`${days}D`);
+  }
+  if (hours > 0 || days > 0) {
+    parts.push(`${hours}H`);
+  }
+  if (minutes > 0 || hours > 0 || days > 0) {
+    parts.push(`${minutes}M`);
+  }
+
+  return parts.join(' ');
 }
 
 function humanizeTaskDueDate(dueDate, format) {
