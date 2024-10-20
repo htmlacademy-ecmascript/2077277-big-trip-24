@@ -3,7 +3,7 @@ export default class DestinationsModel {
   #destinations = [];
   #destinationsApiService = null;
 
-  constructor({destinationsApiService}) {
+  constructor({ destinationsApiService }) {
     this.#destinationsApiService = destinationsApiService;
   }
 
@@ -14,7 +14,7 @@ export default class DestinationsModel {
   async init() {
     try {
       this.#destinations = await this.#destinationsApiService.destinations;
-    } catch(err) {
+    } catch (err) {
       this.#destinations = [];
       this._notify(UpdateType.ERROR);
     }

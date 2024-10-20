@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../framework/render';
-import { UserAction, UpdateType, EmptyPhrase, FilterType} from '../const';
+import { UserAction, UpdateType, EmptyPhrase, FilterType } from '../const';
 import FormEditView from '../view/form-edit-view';
 import PointsEmptyView from '../view/points-empty-view';
 
@@ -12,7 +12,6 @@ export default class NewPointPresenter {
   #pointsEmptyList = null;
   #container = null;
   #pointsModel = null;
-
   #pointAddComponent = null;
 
   constructor({ pointListContainer, onDataChange, onDestroy, destinationsModel, offersModel, container, pointsModel }) {
@@ -94,6 +93,13 @@ export default class NewPointPresenter {
     this.#renderPointsEmptyList();
   };
 
+  #renderPointsEmptyList() {
+    if (!this.#pointsModel.points.length) {
+      this.#pointsEmptyList = new PointsEmptyView({ message: EmptyPhrase[FilterType.EVERYTHING] });
+      render(this.#pointsEmptyList, this.#container);
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
@@ -101,11 +107,4 @@ export default class NewPointPresenter {
       this.#renderPointsEmptyList();
     }
   };
-
-  #renderPointsEmptyList() {
-    if(!this.#pointsModel.points.length) {
-      this.#pointsEmptyList = new PointsEmptyView({ message: EmptyPhrase[FilterType.EVERYTHING] });
-      render(this.#pointsEmptyList, this.#container);
-    }
-  }
 }

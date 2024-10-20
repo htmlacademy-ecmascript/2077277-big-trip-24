@@ -44,6 +44,12 @@ const filterPresenter = new FilterPresenter({
 const newPointButtonComponent = new NewPointButtonView({
   onButtonClick: handleNewPointButtonClick
 });
+const headerPresenter = new HeaderPresenter({
+  headerContainer: headerContainer,
+  pointsModel: pointsModel,
+  offersModel: offersModel,
+  destinationsModel: destinationsModel
+});
 
 function handleNewPointButtonClick() {
   pointsPresenter.createPoint();
@@ -53,13 +59,6 @@ function handleNewPointButtonClick() {
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
-
-const headerPresenter = new HeaderPresenter({
-  headerContainer: headerContainer,
-  pointsModel: pointsModel,
-  offersModel: offersModel,
-  destinationsModel: destinationsModel
-});
 
 pointsPresenter.init();
 filterPresenter.init();

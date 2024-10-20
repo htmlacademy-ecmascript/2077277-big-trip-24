@@ -1,7 +1,7 @@
 import { render, remove, RenderPosition } from '../framework/render';
 import SortingView from '../view/sorting-view';
 import { SortType } from '../const';
-import { enabledSortType } from '../const';
+import { EnabledSortType } from '../const';
 
 export default class SortPresenter {
   #container = null;
@@ -19,7 +19,7 @@ export default class SortPresenter {
       {
         type,
         isChecked: type === this.#currentSortType,
-        isDisabled: !enabledSortType[type]
+        isDisabled: !EnabledSortType[type]
       }));
   }
 

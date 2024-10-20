@@ -1,12 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { POINTS_TYPES } from '../const';
+import { POINTS_TYPES, EMPTY_PRICE } from '../const';
 import { capitalize, humanizeTaskDueDate } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 
 const DEFAULT_POINT = {
-  basePrice: 0,
+  basePrice: EMPTY_PRICE,
   dateFrom: '',
   dateTo: '',
   destination: null,
@@ -162,7 +162,6 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
             </li>`;
 }
 export default class FormEditView extends AbstractStatefulView {
-  #point = null;
   #allDestinations = [];
   #allOffers = [];
   #onCloseEditButtonClick = null;
@@ -175,7 +174,6 @@ export default class FormEditView extends AbstractStatefulView {
   constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer, allOffers, onCloseEditButtonClick,
     onSubmitButtonClick, onDeleteClick, isNewPoint }) {
     super();
-    this.#point = point;
     this._setState(FormEditView.parsePointToState(point, destination, typeOffer));
     this.#allDestinations = allDestinations;
     this.#allOffers = allOffers;
@@ -196,6 +194,10 @@ export default class FormEditView extends AbstractStatefulView {
       typeOffer: this.#allOffers.find((offer) => offer.type === point.type),
       destination: this.#allDestinations.find((destination) => destination.id === point.destination)
     });
+  }
+
+  _restoreHandlers() {
+    this.#setEventListeners();
   }
 
   #setEventListeners() {
@@ -224,8 +226,25 @@ export default class FormEditView extends AbstractStatefulView {
     this.#setDateToPicker();
   }
 
-  _restoreHandlers() {
-    this.#setEventListeners();
+  #setDateFromPicker() {
+    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateFrom,
+      'time_24hr': true,
+      onChange: this.#dateFromChangeHandler,
+    });
+  }
+
+  #setDateToPicker() {
+    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateTo,
+      'time_24hr': true,
+      onChange: this.#dateToChangeHandler,
+      minDate: this._state.dateFrom,
+    });
   }
 
   #closeEditButtonClickHandler = (evt) => {
@@ -297,27 +316,6 @@ export default class FormEditView extends AbstractStatefulView {
       dateTo: userDate
     });
   };
-
-  #setDateFromPicker() {
-    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
-      enableTime: true,
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateFrom,
-      'time_24hr': true,
-      onChange: this.#dateFromChangeHandler,
-    });
-  }
-
-  #setDateToPicker() {
-    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
-      enableTime: true,
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateTo,
-      'time_24hr': true,
-      onChange: this.#dateToChangeHandler,
-      minDate: this._state.dateFrom,
-    });
-  }
 
   static parsePointToState(point, pointDestination, typeOffer) {
     return {

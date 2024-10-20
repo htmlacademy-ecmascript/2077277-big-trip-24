@@ -1,5 +1,9 @@
 const POINTS_TYPES = ['taxi', 'flight', 'train', 'ship', 'check-in', 'sightseeing',
   'bus', 'drive', 'restaurant'];
+const AUTHORIZATION = 'Basic er88gh56ddw';
+const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
+const EMPTY_PRICE = 0;
+const DESTINATIONS_COUNT = 3;
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -16,7 +20,7 @@ const SortType = {
   OFFERS: 'offers'
 };
 
-const enabledSortType = {
+const EnabledSortType = {
   [SortType.DAY]: true,
   [SortType.EVENT]: false,
   [SortType.TIME]: true,
@@ -31,8 +35,10 @@ const EmptyPhrase = {
   [FilterType.FUTURE]: 'There are no future events now'
 };
 
-const LOADING_MASSAGE = 'Loading...';
-const FAILED_MASSAGE = 'Failed to load latest route information';
+const Feedback = {
+  LOADING_MASSAGE: 'Loading...',
+  FAILED_MASSAGE: 'Failed to load latest route information',
+};
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -60,19 +66,13 @@ const Method = {
   DELETE: 'DELETE'
 };
 
-const AUTHORIZATION = 'Basic er88gh56ddw';
-const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
-
 const TimeLimit = {
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000,
 };
 
-const EMPTY_PRICE = 0;
-const DESTINATIONS_COUNT = 3;
-
 export {
   POINTS_TYPES, FilterType, SortType, EmptyPhrase,
-  Mode, enabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT,
-  LOADING_MASSAGE, TimeLimit, FAILED_MASSAGE, EMPTY_PRICE, DESTINATIONS_COUNT
+  Mode, EnabledSortType, UpdateType, UserAction, Method, AUTHORIZATION, END_POINT,
+  Feedback, TimeLimit, EMPTY_PRICE, DESTINATIONS_COUNT
 };

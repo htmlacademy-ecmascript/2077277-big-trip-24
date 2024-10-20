@@ -6,7 +6,7 @@ import SortPresenter from './sort-presenter';
 import { UpdateType, FilterType, SortType, UserAction, } from '../const';
 import { filter } from '../utils/filter';
 import { getPointsByDate, getPointsByPrice, getPointsByTime } from '../utils/task';
-import { EmptyPhrase, LOADING_MASSAGE, TimeLimit, FAILED_MASSAGE } from '../const';
+import { EmptyPhrase, TimeLimit, Feedback } from '../const';
 import NewPointPresenter from './new-point-presenter';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 
@@ -75,7 +75,7 @@ export default class PointsPresenter {
   createPoint() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    if(this.#pointsEmptyList) {
+    if (this.#pointsEmptyList) {
       remove(this.#pointsEmptyList);
     }
     this.#newPointPresenter.init();
@@ -126,7 +126,6 @@ export default class PointsPresenter {
           await this.#pointsModel.updatePoint(updateType, update);
         } catch (err) {
           this.#pointPresenters.get(update.id).setAborting();
-          // document.addEventListener('keydown', this.#newPointPresenter.escKeyDownHandler());
         }
         break;
       case UserAction.ADD_POINT:
@@ -191,7 +190,7 @@ export default class PointsPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
-    if(this.#sortPresenter){
+    if (this.#sortPresenter) {
       this.#sortPresenter.removeSortComponent();
     }
 
@@ -207,12 +206,12 @@ export default class PointsPresenter {
   }
 
   #renderLoading() {
-    this.#pointsLoading = new PointsEmptyView({ message: LOADING_MASSAGE });
+    this.#pointsLoading = new PointsEmptyView({ message: Feedback.LOADING_MASSAGE });
     render(this.#pointsLoading, this.#container);
   }
 
   #renderError() {
-    this.#pointsError = new PointsEmptyView({ message: FAILED_MASSAGE });
+    this.#pointsError = new PointsEmptyView({ message: Feedback.FAILED_MASSAGE });
     render(this.#pointsError, this.#container);
   }
 

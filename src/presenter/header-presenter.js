@@ -1,7 +1,7 @@
 import InfoView from '../view/info-view';
 import { render, RenderPosition, replace, remove } from '../framework/render';
 import { getPointsByDate, getTotalOffers, getCheckedOffers, humanizeTaskDueDate } from '../utils/task';
-import { DESTINATIONS_COUNT} from '../const';
+import { DESTINATIONS_COUNT } from '../const';
 
 export default class HeaderPresenter {
   #headerContainer = null;
@@ -11,33 +11,13 @@ export default class HeaderPresenter {
   #infoComponent = null;
   #sortedPoints = [];
 
-  constructor({headerContainer, pointsModel, offersModel, destinationsModel}) {
+  constructor({ headerContainer, pointsModel, offersModel, destinationsModel }) {
     this.#headerContainer = headerContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
-  }
-
-  #getRoute() {
-    const destinationNames = this.#sortedPoints.map((point) =>
-      this.#destinationsModel.destinations.find((destination) => destination.id === point.destination)?.name);
-
-    return destinationNames.length > DESTINATIONS_COUNT
-      ? [destinationNames[0], '...', destinationNames[destinationNames.length - 1]].join(' - ')
-      : destinationNames.join(' - ');
-  }
-
-  #getRouteDates() {
-    const startDate = humanizeTaskDueDate(this.#sortedPoints[0]?.dateFrom, 'D MMM');
-    const endDate = humanizeTaskDueDate(this.#sortedPoints[this.#sortedPoints.length - 1]?.dateTo, 'D MMM');
-    return `${startDate} - ${endDate}`;
-  }
-
-  #getRoutePrice() {
-    return this.#pointsModel.points.reduce((routePrice, point) =>
-      routePrice + point.basePrice + getTotalOffers(point.offers, getCheckedOffers(this.#offersModel.offers, point.type)), 0);
   }
 
   init() {
@@ -68,6 +48,26 @@ export default class HeaderPresenter {
     if (this.#infoComponent) {
       remove(this.#infoComponent);
     }
+  }
+
+  #getRoute() {
+    const destinationNames = this.#sortedPoints.map((point) =>
+      this.#destinationsModel.destinations.find((destination) => destination.id === point.destination)?.name);
+
+    return destinationNames.length > DESTINATIONS_COUNT
+      ? [destinationNames[0], '...', destinationNames[destinationNames.length - 1]].join(' - ')
+      : destinationNames.join(' - ');
+  }
+
+  #getRouteDates() {
+    const startDate = humanizeTaskDueDate(this.#sortedPoints[0]?.dateFrom, 'D MMM');
+    const endDate = humanizeTaskDueDate(this.#sortedPoints[this.#sortedPoints.length - 1]?.dateTo, 'D MMM');
+    return `${startDate} - ${endDate}`;
+  }
+
+  #getRoutePrice() {
+    return this.#pointsModel.points.reduce((routePrice, point) =>
+      routePrice + point.basePrice + getTotalOffers(point.offers, getCheckedOffers(this.#offersModel.offers, point.type)), 0);
   }
 
   #handleModelEvent = () => this.init();
