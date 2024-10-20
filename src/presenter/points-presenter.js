@@ -39,12 +39,15 @@ export default class PointsPresenter {
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#onNewPointDestroy = onNewPointDestroy;
+
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#pointsList.element,
       onDataChange: this.#handleViewAction,
       onDestroy: this.#onNewPointDestroy,
       destinationsModel: destinationsModel,
-      offersModel: offersModel
+      offersModel: offersModel,
+      container: container,
+      pointsModel: pointsModel,
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -123,6 +126,7 @@ export default class PointsPresenter {
           await this.#pointsModel.updatePoint(updateType, update);
         } catch (err) {
           this.#pointPresenters.get(update.id).setAborting();
+          // document.addEventListener('keydown', this.#newPointPresenter.escKeyDownHandler());
         }
         break;
       case UserAction.ADD_POINT:

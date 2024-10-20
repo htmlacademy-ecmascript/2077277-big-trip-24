@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { UpdateType, FAILED_MASSAGE } from '../const';
+import { UpdateType } from '../const';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -30,7 +30,6 @@ export default class PointsModel extends Observable {
       this.#points = [];
 
       this._notify(UpdateType.ERROR);
-      throw new Error(FAILED_MASSAGE);
     }
   }
 

@@ -66,10 +66,6 @@ function getPointsByTime(pointA, pointB) {
   return pointBDuration - pointADuration;
 }
 
-function isDatesEqual(dateA, dateB) {
-  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
-}
-
 function getCheckedOffers(offers, type) {
   const offerByType = offers.find((offer) => offer.type === type);
   return offerByType ? offerByType.offers : [];
@@ -86,5 +82,5 @@ function getTotalOffers(offersID = [], availableOffers = []) {
 export {
   humanizeTaskDueDate, getDifferenceTime, capitalize,
   isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
-  getPointsByTime, isDatesEqual, getCheckedOffers, getTotalOffers
+  getPointsByTime, getCheckedOffers, getTotalOffers
 };

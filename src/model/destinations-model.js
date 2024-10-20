@@ -1,3 +1,4 @@
+import { UpdateType } from '../const';
 export default class DestinationsModel {
   #destinations = [];
   #destinationsApiService = null;
@@ -15,6 +16,7 @@ export default class DestinationsModel {
       this.#destinations = await this.#destinationsApiService.destinations;
     } catch(err) {
       this.#destinations = [];
+      this._notify(UpdateType.ERROR);
     }
   }
 

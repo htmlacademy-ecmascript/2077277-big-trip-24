@@ -1,3 +1,4 @@
+import { UpdateType } from '../const';
 export default class OffersModel {
   #offersApiService = null;
   #offers = [];
@@ -15,6 +16,7 @@ export default class OffersModel {
       this.#offers = await this.#offersApiService.offers;
     } catch(err) {
       this.#offers = [];
+      this._notify(UpdateType.ERROR);
     }
   }
 

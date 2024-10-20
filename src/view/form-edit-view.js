@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINTS_TYPES } from '../const';
-import { capitalize, humanizeTaskDueDate, isDatesEqual } from '../utils/task';
+import { capitalize, humanizeTaskDueDate } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
@@ -100,7 +100,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
   const cancelOrDeleteButtonTemplate = !isNewPoint ?
     `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}
     </button>` :
-    `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel
+    `<button class="event__reset-btn" type="reset">Cancel
     </button>`;
 
   return `<li class="trip-events__item">
@@ -134,10 +134,10 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(dateFrom, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(dateFrom, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''} required>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(dateTo, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(dateTo, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''} required>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -235,27 +235,7 @@ export default class FormEditView extends AbstractStatefulView {
 
   #submitButtonClickHandler = (evt) => {
     evt.preventDefault();
-    const dateFrom = this.element.querySelector('#event-start-time-1').value;
-    const dateTo = this.element.querySelector('#event-end-time-1').value;
-
-    if (dateFrom === '' || dateTo === '') {
-      return;
-    }
     this.#offerChangeHandler();
-
-    const isPriceEqual = this._state.basePrice === this.#point.basePrice;
-    const isTypeOffersEqual = this._state.type === this.#point.type;
-    const targetDestination = this.element.querySelector('.event__input--destination').dataset.id;
-    const isDestinationEqual = targetDestination === this.#point.destination;
-    const isOffersEqual = this._state.offers.every((offer) => this.#point.offers.includes(offer)) && this.#point.offers.every((offer) => this._state.offers.includes(offer));
-    const isDatesFromEqual = isDatesEqual(this._state.dateFrom, this.#point.dateFrom);
-    const isDatesToEqual = isDatesEqual(this._state.dateTo, this.#point.dateTo);
-
-    if (isPriceEqual && isTypeOffersEqual && isDestinationEqual && isOffersEqual && isDatesFromEqual && isDatesToEqual) {
-      this.#onCloseEditButtonClick();
-      return;
-    }
-
     this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this._state));
   };
 
