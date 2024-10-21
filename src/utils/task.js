@@ -7,11 +7,27 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 function getDifferenceTime(start, end) {
-  return (dayjs.duration(dayjs(end)
-    .set('seconds', 0)
-    .set('millisecond', 0)
-    .diff(dayjs(start).set('seconds', 0).set('millisecond', 0))))
-    .format('DD,HH,mm');
+  const startTime = dayjs(start).startOf('minute');
+  const endTime = dayjs(end).startOf('minute');
+  const diffMilliseconds = endTime.diff(startTime);
+
+  const diffDuration = dayjs.duration(diffMilliseconds);
+  const days = (Math.floor(diffDuration.asDays())).toString().padStart(2, '0');
+  const hours = diffDuration.hours().toString().padStart(2, '0');
+  const minutes = diffDuration.minutes().toString().padStart(2, '0');
+
+  const parts = [];
+  if (days > 0) {
+    parts.push(`${days}D`);
+  }
+  if (hours > 0 || days > 0) {
+    parts.push(`${hours}H`);
+  }
+  if (minutes > 0 || hours > 0 || days > 0) {
+    parts.push(`${minutes}M`);
+  }
+
+  return parts.join(' ');
 }
 
 function humanizeTaskDueDate(dueDate, format) {
@@ -36,7 +52,7 @@ function isPastPoint(point) {
   return point.dateTo && dayjs().isAfter(point.dateTo, 'minute');
 }
 
-function getPointsByDate(pointA, pointB) {
+function getPointsByDate(pointB, pointA) {
   return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
 }
 
@@ -50,12 +66,21 @@ function getPointsByTime(pointA, pointB) {
   return pointBDuration - pointADuration;
 }
 
-function isDatesEqual(dateA, dateB) {
-  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+function getCheckedOffers(offers, type) {
+  const offerByType = offers.find((offer) => offer.type === type);
+  return offerByType ? offerByType.offers : [];
+}
+
+function getTotalOffers(offersID = [], availableOffers = []) {
+  const offersTotal = offersID.reduce((totalCost, id) => {
+    const offer = availableOffers.find((item) => item.id === id);
+    return totalCost + (offer ? offer.price : 0);
+  }, 0);
+  return offersTotal;
 }
 
 export {
   humanizeTaskDueDate, getDifferenceTime, capitalize,
   isFuturePoint, isPresentPoint, isPastPoint, getPointsByDate, getPointsByPrice,
-  getPointsByTime, isDatesEqual
+  getPointsByTime, getCheckedOffers, getTotalOffers
 };

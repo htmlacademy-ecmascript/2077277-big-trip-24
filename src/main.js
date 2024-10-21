@@ -15,36 +15,40 @@ const main = document.querySelector('.page-body__page-main');
 const mainSection = main.querySelector('.trip-events');
 const header = document.querySelector('.page-header');
 const filtersContainer = header.querySelector('.trip-controls__filters');
-const routeContainer = header.querySelector('.trip-main');
-const offersModel = new OffersModel({ offersApiService: apiService });
-const destinationsModel = new DestinationsModel({ destinationsApiService: apiService });
+const headerContainer = header.querySelector('.trip-main');
+const offersModel = new OffersModel({
+  offersApiService: apiService
+});
+const destinationsModel = new DestinationsModel({
+  destinationsApiService: apiService
+});
 const pointsModel = new PointsModel({
   pointsApiService: apiService,
   offersModel: offersModel,
   destinationsModel: destinationsModel
 });
 const filterModel = new FilterModel;
-
-
 const pointsPresenter = new PointsPresenter({
   container: mainSection,
   pointsModel,
   filterModel,
   offersModel,
   destinationsModel,
-  onNewPointDestroy: handleNewPointFormClose
+  onNewPointDestroy: handleNewPointFormClose,
 });
-
-const headerPresenter = new HeaderPresenter(routeContainer);
-
 const filterPresenter = new FilterPresenter({
   filterContainer: filtersContainer,
   filterModel: filterModel,
   pointsModel: pointsModel
 });
-
 const newPointButtonComponent = new NewPointButtonView({
   onButtonClick: handleNewPointButtonClick
+});
+const headerPresenter = new HeaderPresenter({
+  headerContainer: headerContainer,
+  pointsModel: pointsModel,
+  offersModel: offersModel,
+  destinationsModel: destinationsModel
 });
 
 function handleNewPointButtonClick() {
@@ -56,10 +60,8 @@ function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
 
-headerPresenter.init();
 pointsPresenter.init();
 filterPresenter.init();
-pointsModel.init()
-  .finally(() => {
-    render(newPointButtonComponent, routeContainer, RenderPosition.BEFOREEND);
-  });
+render(newPointButtonComponent, headerContainer, RenderPosition.BEFOREEND);
+pointsModel.init();
+headerPresenter.init();

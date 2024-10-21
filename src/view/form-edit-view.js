@@ -1,12 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { POINTS_TYPES } from '../const';
-import { capitalize, humanizeTaskDueDate, isDatesEqual } from '../utils/task';
+import { POINTS_TYPES, EMPTY_PRICE } from '../const';
+import { capitalize, humanizeTaskDueDate } from '../utils/task';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 
 const DEFAULT_POINT = {
-  basePrice: 0,
+  basePrice: EMPTY_PRICE,
   dateFrom: '',
   dateTo: '',
   destination: null,
@@ -55,12 +55,12 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
     if (!typeOffer.offers || !typeOffer.offers.length) {
       return '';
     } else {
-      return `<section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      return `<section class="event__section event__section--offers">
+                  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
         ${createAvailableOffers}
       </div>
-    </section>`;
+      </section>`;
     }
   }
 
@@ -73,6 +73,11 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
   function createAvailableDestinationSection() {
     if (!destination.description && (!destination.pictures || !destination.pictures.length)) {
       return '';
+    } else if (destination.description && (!destination.pictures || !destination.pictures.length)) {
+      return `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+    </section>`;
     } else {
       return `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -95,7 +100,7 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
   const cancelOrDeleteButtonTemplate = !isNewPoint ?
     `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}
     </button>` :
-    `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel
+    `<button class="event__reset-btn" type="reset">Cancel
     </button>`;
 
   return `<li class="trip-events__item">
@@ -129,10 +134,10 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(dateFrom, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(dateFrom, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''} required>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(dateTo, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(dateTo, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''} required>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -148,14 +153,15 @@ function createFormEditTemplate(point, allDestinations, isNewPoint) {
                   ${rollupButtonTemplate}
                 </header>
                 <section class="event__details">
-                      ${createAvailableOffersSection()}
-                      ${createAvailableDestinationSection()}
+
+                     ${createAvailableOffersSection()}
+
+                    ${createAvailableDestinationSection()}
                 </section>
               </form>
             </li>`;
 }
 export default class FormEditView extends AbstractStatefulView {
-  #point = null;
   #allDestinations = [];
   #allOffers = [];
   #onCloseEditButtonClick = null;
@@ -165,10 +171,9 @@ export default class FormEditView extends AbstractStatefulView {
   #dateToPicker = null;
   #onDeleteClick = null;
 
-  constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer = {}, allOffers, onCloseEditButtonClick,
+  constructor({ point = DEFAULT_POINT, destination = {}, allDestinations, typeOffer, allOffers, onCloseEditButtonClick,
     onSubmitButtonClick, onDeleteClick, isNewPoint }) {
     super();
-    this.#point = point;
     this._setState(FormEditView.parsePointToState(point, destination, typeOffer));
     this.#allDestinations = allDestinations;
     this.#allOffers = allOffers;
@@ -189,6 +194,10 @@ export default class FormEditView extends AbstractStatefulView {
       typeOffer: this.#allOffers.find((offer) => offer.type === point.type),
       destination: this.#allDestinations.find((destination) => destination.id === point.destination)
     });
+  }
+
+  _restoreHandlers() {
+    this.#setEventListeners();
   }
 
   #setEventListeners() {
@@ -217,8 +226,25 @@ export default class FormEditView extends AbstractStatefulView {
     this.#setDateToPicker();
   }
 
-  _restoreHandlers() {
-    this.#setEventListeners();
+  #setDateFromPicker() {
+    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateFrom,
+      'time_24hr': true,
+      onChange: this.#dateFromChangeHandler,
+    });
+  }
+
+  #setDateToPicker() {
+    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateTo,
+      'time_24hr': true,
+      onChange: this.#dateToChangeHandler,
+      minDate: this._state.dateFrom,
+    });
   }
 
   #closeEditButtonClickHandler = (evt) => {
@@ -228,27 +254,7 @@ export default class FormEditView extends AbstractStatefulView {
 
   #submitButtonClickHandler = (evt) => {
     evt.preventDefault();
-    const dateFrom = this.element.querySelector('#event-start-time-1').value;
-    const dateTo = this.element.querySelector('#event-end-time-1').value;
-
-    if (dateFrom === '' || dateTo === '') {
-      return;
-    }
     this.#offerChangeHandler();
-
-    const isPriceEqual = this._state.basePrice === this.#point.basePrice;
-    const isTypeOffersEqual = this._state.type === this.#point.type;
-    const targetDestination = this.element.querySelector('.event__input--destination').dataset.id;
-    const isDestinationEqual = targetDestination === this.#point.destination;
-    const isOffersEqual = this._state.offers.every((offer) => this.#point.offers.includes(offer)) && this.#point.offers.every((offer) => this._state.offers.includes(offer));
-    const isDatesFromEqual = isDatesEqual(this._state.dateFrom, this.#point.dateFrom);
-    const isDatesToEqual = isDatesEqual(this._state.dateTo, this.#point.dateTo);
-
-    if (isPriceEqual && isTypeOffersEqual && isDestinationEqual && isOffersEqual && isDatesFromEqual && isDatesToEqual) {
-      this.#onCloseEditButtonClick();
-      return;
-    }
-
     this.#onSubmitButtonClick(FormEditView.parseStateToPoint(this._state));
   };
 
@@ -310,27 +316,6 @@ export default class FormEditView extends AbstractStatefulView {
       dateTo: userDate
     });
   };
-
-  #setDateFromPicker() {
-    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
-      enableTime: true,
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateFrom,
-      'time_24hr': true,
-      onChange: this.#dateFromChangeHandler,
-    });
-  }
-
-  #setDateToPicker() {
-    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
-      enableTime: true,
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateTo,
-      'time_24hr': true,
-      onChange: this.#dateToChangeHandler,
-      minDate: this._state.dateFrom,
-    });
-  }
 
   static parsePointToState(point, pointDestination, typeOffer) {
     return {

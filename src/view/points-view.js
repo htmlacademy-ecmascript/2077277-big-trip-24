@@ -1,6 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
 import { humanizeTaskDueDate, getDifferenceTime, capitalize } from '../utils/task';
-import { TIME_NULL } from '../const';
 
 function createPointsTemplate(point, destination, offers) {
 
@@ -17,23 +16,11 @@ function createPointsTemplate(point, destination, offers) {
   }
   const createOffers = offers.map((offer) => createOffersTemplate(offer.title, offer.price)).join('');
 
-  function convertDifferenceTime(time) {
-    const [days, hours, minutes] = time.split(',');
-    switch (true) {
-      case days !== TIME_NULL:
-        return `${days}D ${hours}H ${minutes}M`;
-      case hours !== TIME_NULL:
-        return `${hours}H ${minutes}M`;
-      default:
-        return `${minutes}M`;
-    }
-  }
-
-  const differenceTime = convertDifferenceTime(getDifferenceTime(dateFrom, dateTo));
+  const differenceTime = getDifferenceTime(dateFrom, dateTo);
 
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="${humanizeTaskDueDate(dateFrom, 'YYYY-MM-DD')}">${humanizeTaskDueDate(dateFrom, 'DD MMM')}</time>
+                <time class="event__date" datetime="${humanizeTaskDueDate(dateFrom, 'YYYY-MM-DD')}">${humanizeTaskDueDate(dateFrom, 'MMM DD')}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>

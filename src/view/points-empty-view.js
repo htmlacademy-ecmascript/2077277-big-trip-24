@@ -8,7 +8,7 @@ function createPointsEmptyTemplate(message) {
 export default class PointsEmptyView extends AbstractView {
   #message = null;
 
-  constructor({message}) {
+  constructor({ message }) {
     super();
     this.#message = message;
   }

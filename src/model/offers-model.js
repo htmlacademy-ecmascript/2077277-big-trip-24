@@ -1,8 +1,9 @@
+import { UpdateType } from '../const';
 export default class OffersModel {
   #offersApiService = null;
   #offers = [];
 
-  constructor({offersApiService}){
+  constructor({ offersApiService }) {
     this.#offersApiService = offersApiService;
   }
 
@@ -13,8 +14,9 @@ export default class OffersModel {
   async init() {
     try {
       this.#offers = await this.#offersApiService.offers;
-    } catch(err) {
+    } catch (err) {
       this.#offers = [];
+      this._notify(UpdateType.ERROR);
     }
   }
 
